@@ -13,6 +13,7 @@ var ads = [];
 var copyNumbers = NUMBERS.slice();
 var copyTitles = TITLES.slice();
 var copyFeatures = FEATURES.slice();
+
 var buttonTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var buttonTemplateImage = buttonTemplate.querySelector('img');
 var buttonWidth = buttonTemplateImage.getAttribute('width');
@@ -39,13 +40,12 @@ ads.forEach(function (item) {
 mapPins.appendChild(fragment);
 
 var cloneCard = cardTemplate.cloneNode(true);
+var list = cloneCard.querySelector('.popup__features');
 cloneCard.querySelector('h3').textContent = ads[0].offer.title;
 cloneCard.querySelector('p small').textContent = ads[0].offer.address;
-cloneCard.querySelector('.popup__price').textContent = ads[0].offer.price + '&#x20bd;/ночь';
+cloneCard.querySelector('.popup__price').textContent = ads[0].offer.price + ' &#x20bd;/ночь';
 cloneCard.querySelector('p:nth-of-type(3)').textContent = ads[0].offer.rooms + ' комнаты для ' + ads[0].offer.guests + ' гостей';
 cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + ads[0].offer.checkin + ', выезд до ' + ads[0].offer.checkout;
-
-var list = cloneCard.querySelector('.popup__features');
 for (i = 0; i < ads[0].offer.features.length; i++) {
   var li = document.createElement('li');
   li.classList.add('feature', 'feature--' + ads[0].offer.features[i]);
@@ -66,13 +66,13 @@ function getRandomElement(arr) {
   var index = Math.floor(Math.random() * arr.length);
   return arr[index];
 }
+
 /**
 * Возвращает значение случайного элемента заданного массива, вырезая его из массива, избегая повторений
 *
 * @param {Array} arr массив
-* @return {string, number} случайный элемент массива
+* @return {string} случайный элемент массива
 */
-
 function getRandomNoRepeatElement(arr) {
   var elem = getRandomElement(arr);
   var index = arr.indexOf(elem);
@@ -82,6 +82,7 @@ function getRandomNoRepeatElement(arr) {
   }
   return elem;
 }
+
 /**
 * Возвращает случайное число в заданном диапазоне
 *
@@ -92,6 +93,7 @@ function getRandomNoRepeatElement(arr) {
 function getRandomNumber(min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
+
 /**
  * Округляет число по заданному значению
  *
@@ -102,6 +104,7 @@ function getRandomNumber(min, max) {
 function roundUpNumber(number, roundBy) {
   return (Math.round(number / roundBy)) * roundBy;
 }
+
 /**
  * Генерирует объект объявления из случайных элементов заданных массивов
  *
