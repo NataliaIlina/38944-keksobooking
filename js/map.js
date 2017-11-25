@@ -1,6 +1,6 @@
 'use strict';
 
-var NUMBERS = [1, 2, 3, 4, 5, 6, 7, 8];
+var NUMBERS = createNumbersArray(1, 8);
 var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var TYPES = ['flat', 'house', 'bungalo'];
 var TIMES = ['12:00', '13:00', '14:00'];
@@ -20,44 +20,41 @@ var buttonWidth = buttonTemplateImage.getAttribute('width');
 var buttonHeight = buttonTemplateImage.getAttribute('height');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 var fragment = document.createDocumentFragment();
-var mapPins = document.querySelector('.map__pins');
-var map = document.querySelector('.map');
+var mapPinsElement = document.querySelector('.map__pins');
+var mapElement = document.querySelector('.map');
 
+mapElement.classList.remove('map--faded');
+// заполняем пустой массив объектами
 for (var i = 0; i < NUMBER_OF_ADS; i++) {
   ads[i] = generateAd(copyNumbers, copyTitles, TYPES, TIMES, copyFeatures, GUESTS_PER_ROOM);
 }
-
-map.classList.remove('map--faded');
-
+// для каждого объекта массива создаем копию элемента с шаблона
 ads.forEach(function (item) {
-  var cloneElem = buttonTemplate.cloneNode(true);
-  cloneElem.style.left = (item.location['x'] - buttonWidth / 2) + 'px';
-  cloneElem.style.top = (item.location['y'] + parseInt(buttonHeight, 10)) + 'px';
-  cloneElem.querySelector('img').setAttribute('src', item.author.avatar);
-  fragment.appendChild(cloneElem);
+  fragment.appendChild(createCloneElement(buttonTemplate, item, buttonWidth, buttonHeight));
 });
+// добавляем фрагмент с копиями в DOM
+mapPinsElement.appendChild(fragment);
+// заполняем карточку объявления данными и добавляем в DOM
+mapElement.appendChild(fillCard(cardTemplate, ads[0]));
 
-mapPins.appendChild(fragment);
-
-var cloneCard = cardTemplate.cloneNode(true);
-var list = cloneCard.querySelector('.popup__features');
-cloneCard.querySelector('h3').textContent = ads[0].offer.title;
-cloneCard.querySelector('p small').textContent = ads[0].offer.address;
-cloneCard.querySelector('.popup__price').textContent = ads[0].offer.price + ' &#x20bd;/ночь';
-cloneCard.querySelector('p:nth-of-type(3)').textContent = ads[0].offer.rooms + ' комнаты для ' + ads[0].offer.guests + ' гостей';
-cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + ads[0].offer.checkin + ', выезд до ' + ads[0].offer.checkout;
-for (i = 0; i < ads[0].offer.features.length; i++) {
-  var li = document.createElement('li');
-  li.classList.add('feature', 'feature--' + ads[0].offer.features[i]);
-  list.appendChild(li);
-}
-cloneCard.querySelector('p:nth-of-type(5)').textContent = ads[0].offer.description;
-cloneCard.querySelector('.popup__avatar').setAttribute('src', ads[0].author.avatar);
-
-map.appendChild(cloneCard);
 
 /**
-* Возвращает значение случайного элемента заданного массива
+ * createNumbersArray - создает массив чисел
+ *
+ * @param  {number} a первый элемент массива
+ * @param  {number} b последний элемент массива
+ * @return {Array} массив
+ */
+function createNumbersArray(a, b) {
+  var arr = [];
+  for (a; a <= b; a++) {
+    arr.push(a);
+  }
+  return arr;
+}
+
+/**
+* getRandomElement - возвращает значение случайного элемента заданного массива
 *
 * @param {Array} arr массив
 * @return {string} случайный элемент массива
@@ -68,10 +65,10 @@ function getRandomElement(arr) {
 }
 
 /**
-* Возвращает значение случайного элемента заданного массива, вырезая его из массива, избегая повторений
+* getRandomNoRepeatElement - возвращает значение случайного элемента заданного массива, вырезая его из массива
 *
 * @param {Array} arr массив
-* @return {string} случайный элемент массива
+* @return {string|number} случайный элемент массива
 */
 function getRandomNoRepeatElement(arr) {
   var elem = getRandomElement(arr);
@@ -84,7 +81,7 @@ function getRandomNoRepeatElement(arr) {
 }
 
 /**
-* Возвращает случайное число в заданном диапазоне
+* getRandomNumber - возвращает случайное число в заданном диапазоне
 *
 * @param {number} min минимальное значение
 * @param {number} max максимальное значение
@@ -95,7 +92,7 @@ function getRandomNumber(min, max) {
 }
 
 /**
- * Округляет число по заданному значению
+ * roundUpNumber - округляет число по заданному значению
  *
  * @param  {number} number  число
  * @param  {number} roundBy диапазон округления
@@ -106,7 +103,7 @@ function roundUpNumber(number, roundBy) {
 }
 
 /**
- * Генерирует объект объявления из случайных элементов заданных массивов
+ * generateAd - генерирует объект объявления из случайных элементов заданных массивов
  *
  * @param  {Array} numbers порядковые номера пользователей
  * @param  {Array} titles название объявления
@@ -144,4 +141,46 @@ function generateAd(numbers, titles, types, times, features, guests) {
     y: locationY
   };
   return ad;
+}
+
+/**
+ * createCloneElement - возвращает объект, заполненный данными из массива
+ *
+ * @param  {Object} template шаблон для создания копии
+ * @param  {Object} obj объект с данными
+ * @param  {string} width атрибут ширины элемента (для точного указания локации)
+ * @param  {string} height атрибут высоты элемента
+ * @return {Object} скопированный с шаблона элемент с данными
+ */
+function createCloneElement(template, obj, width, height) {
+  var сloneElement = template.cloneNode(true);
+  сloneElement.style.left = (obj.location['x'] - width / 2) + 'px';
+  сloneElement.style.top = (obj.location['y'] + parseInt(height, 10)) + 'px';
+  сloneElement.querySelector('img').setAttribute('src', obj.author.avatar);
+  return сloneElement;
+}
+
+/**
+ * fillCard - возвращает карточку объявления с данными из объекта
+ *
+ * @param  {Object} template шаблон элемента
+ * @param  {Object} obj объект с данными
+ * @return {Object} карта товара с данными
+ */
+function fillCard(template, obj) {
+  var cloneCard = template.cloneNode(true);
+  var list = cloneCard.querySelector('.popup__features');
+  cloneCard.querySelector('h3').textContent = obj.offer.title;
+  cloneCard.querySelector('p small').textContent = obj.offer.address;
+  cloneCard.querySelector('.popup__price').textContent = obj.offer.price + ' &#x20bd;/ночь';
+  cloneCard.querySelector('p:nth-of-type(3)').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
+  cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + ads[0].offer.checkin + ', выезд до ' + obj.offer.checkout;
+  for (i = 0; i < obj.offer.features.length; i++) {
+    var li = document.createElement('li');
+    li.classList.add('feature', 'feature--' + obj.offer.features[i]);
+    list.appendChild(li);
+  }
+  cloneCard.querySelector('p:nth-of-type(5)').textContent = obj.offer.description;
+  cloneCard.querySelector('.popup__avatar').setAttribute('src', obj.author.avatar);
+  return cloneCard;
 }
