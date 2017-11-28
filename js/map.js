@@ -1,11 +1,54 @@
 'use strict';
 
 var NUMBERS = createNumbersArray(1, 8);
-var TITLES = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
-var TYPES = ['flat', 'house', 'bungalo'];
-var TIMES = ['12:00', '13:00', '14:00'];
-var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+var TITLES = [
+  'Большая уютная квартира',
+  'Маленькая неуютная квартира',
+  'Огромный прекрасный дворец',
+  'Маленький ужасный дворец',
+  'Красивый гостевой домик',
+  'Некрасивый негостеприимный домик',
+  'Уютное бунгало далеко от моря',
+  'Неуютное бунгало по колено в воде'
+];
+var TYPES = [
+  'flat',
+  'house',
+  'bungalo'
+];
+var TIMES = [
+  '12:00',
+  '13:00',
+  '14:00'
+];
+var FEATURES = [
+  'wifi',
+  'dishwasher',
+  'parking',
+  'washer',
+  'elevator',
+  'conditioner'
+];
+var ROOMS = {
+  min: 1,
+  max: 5
+};
 var GUESTS_PER_ROOM = 2;
+var LOCATIONS = {
+  x: {
+    min: 300,
+    max: 900
+  },
+  y: {
+    min: 100,
+    max: 500
+  }
+};
+var PRICES = {
+  min: 1000,
+  max: 1000000,
+  round: 100
+};
 var NUMBER_OF_ADS = 8;
 
 var ads = [];
@@ -26,16 +69,16 @@ var mapElement = document.querySelector('.map');
 mapElement.classList.remove('map--faded');
 // заполняем пустой массив объектами
 for (var i = 0; i < NUMBER_OF_ADS; i++) {
-  ads[i] = generateAd(copyNumbers, copyTitles, TYPES, TIMES, copyFeatures, GUESTS_PER_ROOM);
+  ads[i] = generateAd();
 }
 // для каждого объекта массива создаем копию элемента с шаблона
 ads.forEach(function (item) {
-  fragment.appendChild(createCloneElement(buttonTemplate, item, buttonWidth, buttonHeight));
+  fragment.appendChild(createCloneElement(item));
 });
 // добавляем фрагмент с копиями в DOM
 mapPinsElement.appendChild(fragment);
 // заполняем карточку объявления данными и добавляем в DOM
-mapElement.appendChild(fillCard(cardTemplate, ads[0]));
+mapElement.appendChild(fillCard(ads[0]));
 
 
 /**
@@ -103,36 +146,29 @@ function roundUpNumber(number, roundBy) {
 }
 
 /**
- * generateAd - генерирует объект объявления из случайных элементов заданных массивов
+ * generateAd - генерирует объект объявления
  *
- * @param  {Array} numbers порядковые номера пользователей
- * @param  {Array} titles название объявления
- * @param  {Array} types тип объявления
- * @param  {Array} times время заезда/выезда
- * @param  {Array} features особенности
- * @param  {number} guests количество гостей на комнату
  * @return {Object} объект объявления
  */
-function generateAd(numbers, titles, types, times, features, guests) {
+function generateAd() {
   var ad = {};
-  var rooms = getRandomNumber(1, 5);
-  var newFeatures = features.slice(0, getRandomNumber(1, features.length));
-  var locationX = getRandomNumber(300, 900);
-  var locationY = getRandomNumber(100, 500);
-
+  var rooms = getRandomNumber(ROOMS.min, ROOMS.max);
+  var features = copyFeatures.slice(0, getRandomNumber(1, copyFeatures.length));
+  var locationX = getRandomNumber(LOCATIONS.x.min, LOCATIONS.x.max);
+  var locationY = getRandomNumber(LOCATIONS.y.min, LOCATIONS.y.max);
   ad.author = {
-    avatar: 'img/avatars/user' + getRandomNoRepeatElement(numbers) + '.png'
+    avatar: 'img/avatars/user' + getRandomNoRepeatElement(copyNumbers) + '.png'
   };
   ad.offer = {
-    title: getRandomNoRepeatElement(titles),
+    title: getRandomNoRepeatElement(copyTitles),
     address: locationX + ', ' + locationY,
-    price: roundUpNumber(getRandomNumber(1000, 1000000), 100),
-    type: getRandomElement(types),
+    price: roundUpNumber(getRandomNumber(PRICES.min, PRICES.max), PRICES.round),
+    type: getRandomElement(TYPES),
     rooms: rooms,
-    guests: rooms * guests,
-    checkin: getRandomElement(times),
-    checkout: getRandomElement(times),
-    features: newFeatures,
+    guests: rooms * GUESTS_PER_ROOM,
+    checkin: getRandomElement(TIMES),
+    checkout: getRandomElement(TIMES),
+    features: features,
     description: '',
     photos: []
   };
@@ -146,16 +182,13 @@ function generateAd(numbers, titles, types, times, features, guests) {
 /**
  * createCloneElement - возвращает объект, заполненный данными из массива
  *
- * @param  {Object} template шаблон для создания копии
  * @param  {Object} obj объект с данными
- * @param  {string} width атрибут ширины элемента (для точного указания локации)
- * @param  {string} height атрибут высоты элемента
  * @return {Object} скопированный с шаблона элемент с данными
  */
-function createCloneElement(template, obj, width, height) {
-  var сloneElement = template.cloneNode(true);
-  сloneElement.style.left = (obj.location['x'] - width / 2) + 'px';
-  сloneElement.style.top = (obj.location['y'] + parseInt(height, 10)) + 'px';
+function createCloneElement(obj) {
+  var сloneElement = buttonTemplate.cloneNode(true);
+  сloneElement.style.left = (obj.location['x'] - buttonWidth / 2) + 'px';
+  сloneElement.style.top = (obj.location['y'] + parseInt(buttonHeight, 10)) + 'px';
   сloneElement.querySelector('img').setAttribute('src', obj.author.avatar);
   return сloneElement;
 }
@@ -163,18 +196,17 @@ function createCloneElement(template, obj, width, height) {
 /**
  * fillCard - возвращает карточку объявления с данными из объекта
  *
- * @param  {Object} template шаблон элемента
  * @param  {Object} obj объект с данными
  * @return {Object} карта товара с данными
  */
-function fillCard(template, obj) {
-  var cloneCard = template.cloneNode(true);
+function fillCard(obj) {
+  var cloneCard = cardTemplate.cloneNode(true);
   var list = cloneCard.querySelector('.popup__features');
   cloneCard.querySelector('h3').textContent = obj.offer.title;
   cloneCard.querySelector('p small').textContent = obj.offer.address;
   cloneCard.querySelector('.popup__price').textContent = obj.offer.price + ' &#x20bd;/ночь';
   cloneCard.querySelector('p:nth-of-type(3)').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
-  cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + ads[0].offer.checkin + ', выезд до ' + obj.offer.checkout;
+  cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
   for (i = 0; i < obj.offer.features.length; i++) {
     var li = document.createElement('li');
     li.classList.add('feature', 'feature--' + obj.offer.features[i]);
