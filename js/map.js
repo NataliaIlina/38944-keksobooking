@@ -11,11 +11,11 @@ var TITLES = [
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'
 ];
-var TYPES = [
-  'flat',
-  'house',
-  'bungalo'
-];
+var TYPES = {
+  flat: 'Квартира',
+  house: 'Дом',
+  bungalo: 'Бунгало'
+};
 var TIMES = [
   '12:00',
   '13:00',
@@ -156,7 +156,7 @@ function generateAd() {
     title: getRandomElement(copyTitles, true),
     address: locationX + ', ' + locationY,
     price: roundUpNumber(getRandomNumber(PRICES.min, PRICES.max), PRICES.round),
-    type: getRandomElement(TYPES),
+    type: getRandomElement(Object.keys(TYPES)),
     rooms: rooms,
     guests: rooms * GUESTS_PER_ROOM,
     checkin: getRandomElement(TIMES),
@@ -198,6 +198,7 @@ function fillCard(obj) {
   cloneCard.querySelector('h3').textContent = obj.offer.title;
   cloneCard.querySelector('p small').textContent = obj.offer.address;
   cloneCard.querySelector('.popup__price').textContent = obj.offer.price + ' &#x20bd;/ночь';
+  cloneCard.querySelector('h4').textContent = TYPES[obj.offer.type];
   cloneCard.querySelector('p:nth-of-type(3)').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
   cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
   featuresList.innerHTML = '';
