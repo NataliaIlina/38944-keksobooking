@@ -100,27 +100,16 @@ function createNumbersArray(a, b) {
 * getRandomElement - возвращает значение случайного элемента заданного массива
 *
 * @param {Array} arr массив
-* @return {string} случайный элемент массива
+* @param {boolean} noRepeat если true, вырезаем элемент из массива
+* @return {*} случайный элемент массива
 */
-function getRandomElement(arr) {
+function getRandomElement(arr, noRepeat) {
   var index = Math.floor(Math.random() * arr.length);
-  return arr[index];
-}
-
-/**
-* getRandomNoRepeatElement - возвращает значение случайного элемента заданного массива, вырезая его из массива
-*
-* @param {Array} arr массив
-* @return {string|number} случайный элемент массива
-*/
-function getRandomNoRepeatElement(arr) {
-  var elem = getRandomElement(arr);
-  var index = arr.indexOf(elem);
-  arr.splice(index, 1);
-  if (typeof elem === 'number' && elem < 10) {
-    elem = '0' + elem;
+  if (noRepeat) {
+    return arr.splice(index, 1);
+  } else {
+    return arr[index];
   }
-  return elem;
 }
 
 /**
@@ -152,15 +141,19 @@ function roundUpNumber(number, roundBy) {
  */
 function generateAd() {
   var ad = {};
+  var userNumber = getRandomElement(copyNumbers, true);
+  if (userNumber < 10) {
+    userNumber = '0' + userNumber;
+  }
   var rooms = getRandomNumber(ROOMS.min, ROOMS.max);
   var features = copyFeatures.slice(0, getRandomNumber(1, copyFeatures.length));
   var locationX = getRandomNumber(LOCATIONS.x.min, LOCATIONS.x.max);
   var locationY = getRandomNumber(LOCATIONS.y.min, LOCATIONS.y.max);
   ad.author = {
-    avatar: 'img/avatars/user' + getRandomNoRepeatElement(copyNumbers) + '.png'
+    avatar: 'img/avatars/user' + userNumber + '.png'
   };
   ad.offer = {
-    title: getRandomNoRepeatElement(copyTitles),
+    title: getRandomElement(copyTitles, true),
     address: locationX + ', ' + locationY,
     price: roundUpNumber(getRandomNumber(PRICES.min, PRICES.max), PRICES.round),
     type: getRandomElement(TYPES),
@@ -186,11 +179,11 @@ function generateAd() {
  * @return {Object} скопированный с шаблона элемент с данными
  */
 function createCloneElement(obj) {
-  var сloneElement = buttonTemplate.cloneNode(true);
-  сloneElement.style.left = (obj.location['x'] - buttonWidth / 2) + 'px';
-  сloneElement.style.top = (obj.location['y'] + parseInt(buttonHeight, 10)) + 'px';
-  сloneElement.querySelector('img').setAttribute('src', obj.author.avatar);
-  return сloneElement;
+  var cloneElement = buttonTemplate.cloneNode(true);
+  cloneElement.style.left = (obj.location['x'] - buttonWidth / 2) + 'px';
+  cloneElement.style.top = (obj.location['y'] + parseInt(buttonHeight, 10)) + 'px';
+  cloneElement.querySelector('img').setAttribute('src', obj.author.avatar);
+  return cloneElement;
 }
 
 /**
@@ -201,16 +194,17 @@ function createCloneElement(obj) {
  */
 function fillCard(obj) {
   var cloneCard = cardTemplate.cloneNode(true);
-  var list = cloneCard.querySelector('.popup__features');
+  var featuresList = cloneCard.querySelector('.popup__features');
   cloneCard.querySelector('h3').textContent = obj.offer.title;
   cloneCard.querySelector('p small').textContent = obj.offer.address;
   cloneCard.querySelector('.popup__price').textContent = obj.offer.price + ' &#x20bd;/ночь';
   cloneCard.querySelector('p:nth-of-type(3)').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
   cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
+  featuresList.innerHTML = '';
   for (i = 0; i < obj.offer.features.length; i++) {
     var li = document.createElement('li');
     li.classList.add('feature', 'feature--' + obj.offer.features[i]);
-    list.appendChild(li);
+    featuresList.appendChild(li);
   }
   cloneCard.querySelector('p:nth-of-type(5)').textContent = obj.offer.description;
   cloneCard.querySelector('.popup__avatar').setAttribute('src', obj.author.avatar);
