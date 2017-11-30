@@ -96,6 +96,11 @@ arrPins.forEach(function (item) {
   item.classList.add('hidden');
 });
 
+// дизейблим филдсеты
+for (var j = 0; j < formFieldsets.length; j++) {
+  formFieldsets[j].disabled = true;
+}
+
 // добавляем попап на страницу
 mapElement.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', createCardElement(ads[0]));
 // скрываем попап по умолчанию
@@ -122,7 +127,7 @@ function showMap() {
   // активируем карту и разблокируем форму
   mapElement.classList.remove('map--faded');
   form.classList.remove('notice__form--disabled');
-  for (var j = 0; j < formFieldsets.length; j++) {
+  for (j = 0; j < formFieldsets.length; j++) {
     formFieldsets[j].disabled = false;
   }
   // показываем указатели и ставим на них обработчик клика
@@ -142,10 +147,11 @@ function onPinClick(evt) {
   arrPins.forEach(function (item) {
     item.classList.remove('map__pin--active');
   });
+  var currentPin = evt.currentTarget;
   // добавляем текущему указателю активный класс
-  evt.currentTarget.classList.add('map__pin--active');
+  currentPin.classList.add('map__pin--active');
   // по атрибуту src в картинке находим нужный нам объект объявления и заполняем попап
-  var src = evt.currentTarget.children[0].getAttribute('src');
+  var src = currentPin.children[0].getAttribute('src');
   ads.forEach(function (item) {
     if (item.author.avatar === src.toString()) {
       fillCard(item, popupElement);
