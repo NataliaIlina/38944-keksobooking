@@ -61,7 +61,6 @@ var copyFeatures = FEATURES.slice();
 
 var buttonTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var buttonTemplateImage = buttonTemplate.querySelector('img');
-var buttonWidth = buttonTemplateImage.getAttribute('width');
 var buttonHeight = buttonTemplateImage.getAttribute('height');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 var fragment = document.createDocumentFragment();
@@ -70,6 +69,7 @@ var mapElement = document.querySelector('.map');
 var mainPin = document.querySelector('.map__pin--main');
 var form = document.querySelector('.notice__form');
 var formFieldsets = form.querySelectorAll('fieldset');
+var currentPin = null;
 
 // заполняем пустой массив объектами
 for (var i = 0; i < NUMBER_OF_ADS; i++) {
@@ -83,17 +83,14 @@ ads.forEach(function (item) {
 // добавляем фрагмент с указателями в DOM
 mapPinsElement.appendChild(fragment);
 // получаем в коллекцию все указатели
-var pins = mapPinsElement.querySelectorAll('.map__pin');
+var pins = Array.prototype.slice.call(mapPinsElement.querySelectorAll('.map__pin'));
 // в массив отправляем все указатели, кроме главного
-var arrPins = [];
-for (i = 0; i < pins.length; i++) {
-  if (pins[i] !== mainPin) {
-    arrPins.push(pins[i]);
-  }
-}
+
 // скрываем указатели по умолчанию
-arrPins.forEach(function (item) {
-  item.classList.add('hidden');
+pins.forEach(function (item) {
+  if (item !== mainPin) {
+    item.classList.add('hidden');
+  }
 });
 
 // дизейблим филдсеты
@@ -131,25 +128,28 @@ function showMap() {
     formFieldsets[j].disabled = false;
   }
   // показываем указатели и ставим на них обработчик клика
-  arrPins.forEach(function (item) {
+  pins.forEach(function (item) {
     item.classList.remove('hidden');
-    item.addEventListener('click', onPinClick);
   });
+  mapElement.addEventListener('click', onMapClick);
 }
 
 /**
  * onPinClick - обработчик события клика мыши на указателях
  *
- * @param  {Object} evt event
+ * @param  {Event} evt event
  */
-function onPinClick(evt) {
-  // удаляем все ативные классы
-  arrPins.forEach(function (item) {
-    item.classList.remove('map__pin--active');
-  });
-  var currentPin = evt.currentTarget;
-  // добавляем текущему указателю активный класс
-  currentPin.classList.add('map__pin--active');
+function onMapClick(evt) {
+  // если уже есть активный пин -удаляем у него класс активности
+  // если клик попал на потомков пина, помещаем его в переменную и добавляем класс
+  var pin = evt.target.closest('.map__pin');
+  if (pin) {
+    if (currentPin) {
+      currentPin.classList.remove('map__pin--active');
+    }
+    currentPin = pin;
+    currentPin.classList.add('map__pin--active');
+  }
   // по атрибуту src в картинке находим нужный нам объект объявления и заполняем попап
   var src = currentPin.children[0].getAttribute('src');
   ads.forEach(function (item) {
@@ -159,7 +159,11 @@ function onPinClick(evt) {
   });
   // показываем попап, задаем обработчики на события попапа
   popupElement.classList.remove('hidden');
-  popupClose.addEventListener('click', onPopupCloseClick);
+  // кликаем на главный пин или крестик -закрываем поппап
+  if (currentPin === mainPin || event.target === popupClose) {
+    closePopup();
+  }
+  // закрываем попап по esc
   document.addEventListener('keydown', onPopupEscPress);
 }
 
@@ -168,28 +172,17 @@ function onPinClick(evt) {
  *
  */
 function closePopup() {
+  if (currentPin !== mainPin) {
+    currentPin.classList.remove('map__pin--active');
+  }
   popupElement.classList.add('hidden');
-  // удаляем активный класс у указателей
-  arrPins.forEach(function (item) {
-    item.classList.remove('map__pin--active');
-  });
-  // удаляем обработчики событий попапа при закрытии его
-  popupClose.removeEventListener('click', onPopupCloseClick);
   document.removeEventListener('keydown', onPopupEscPress);
-}
-
-/**
- * onPopupCloseClick - обработчик события клика на крестик попапа
- *
- */
-function onPopupCloseClick() {
-  closePopup();
 }
 
 /**
  * onPopupEscPress - обработчик события нажатия клавиши при открытом попапе
  *
- * @param  {Object} evt event
+ * @param  {Event} evt event
  */
 function onPopupEscPress(evt) {
   if (evt.keyCode === ESC_KEYCODE) {
@@ -236,7 +229,7 @@ function getRandomElement(arr, noRepeat) {
 * @return {number} случайное число между min и max
 */
 function getRandomNumber(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 /**
@@ -296,7 +289,7 @@ function generateAd() {
  */
 function createCloneElement(obj) {
   var cloneElement = buttonTemplate.cloneNode(true);
-  cloneElement.style.left = (obj.location['x'] - buttonWidth / 2) + 'px';
+  cloneElement.style.left = (obj.location['x']) + 'px';
   cloneElement.style.top = (obj.location['y'] + parseInt(buttonHeight, 10)) + 'px';
   cloneElement.querySelector('img').setAttribute('src', obj.author.avatar);
   return cloneElement;
