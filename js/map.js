@@ -50,6 +50,8 @@ var PRICES = {
   round: 100
 };
 var NUMBER_OF_ADS = 8;
+var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
 
 var ads = [];
 // копируем массивы для дальнейшего изменения
@@ -59,27 +61,134 @@ var copyFeatures = FEATURES.slice();
 
 var buttonTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var buttonTemplateImage = buttonTemplate.querySelector('img');
-var buttonWidth = buttonTemplateImage.getAttribute('width');
 var buttonHeight = buttonTemplateImage.getAttribute('height');
 var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
 var fragment = document.createDocumentFragment();
 var mapPinsElement = document.querySelector('.map__pins');
 var mapElement = document.querySelector('.map');
+var mainPin = document.querySelector('.map__pin--main');
+var form = document.querySelector('.notice__form');
+var formFieldsets = form.querySelectorAll('fieldset');
+var currentPin = null;
 
-mapElement.classList.remove('map--faded');
 // заполняем пустой массив объектами
 for (var i = 0; i < NUMBER_OF_ADS; i++) {
   ads[i] = generateAd();
 }
-// для каждого объекта массива создаем копию элемента с шаблона
+// для каждого объекта массива создаем копию элемента указателя с шаблона
 ads.forEach(function (item) {
   fragment.appendChild(createCloneElement(item));
 });
-// добавляем фрагмент с копиями в DOM
-mapPinsElement.appendChild(fragment);
-// заполняем карточку объявления данными и добавляем в DOM
-mapElement.appendChild(fillCard(ads[0]));
 
+// добавляем фрагмент с указателями в DOM
+mapPinsElement.appendChild(fragment);
+// получаем в коллекцию все указатели
+var pins = Array.prototype.slice.call(mapPinsElement.querySelectorAll('.map__pin'));
+// в массив отправляем все указатели, кроме главного
+
+// скрываем указатели по умолчанию
+pins.forEach(function (item) {
+  if (item !== mainPin) {
+    item.classList.add('hidden');
+  }
+});
+
+// дизейблим филдсеты
+for (var j = 0; j < formFieldsets.length; j++) {
+  formFieldsets[j].disabled = true;
+}
+
+// добавляем попап на страницу
+mapElement.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', createCardElement(ads[0]));
+// скрываем попап по умолчанию
+var popupElement = document.querySelector('.popup');
+var popupClose = popupElement.querySelector('.popup__close');
+popupElement.classList.add('hidden');
+
+// события на главном указателе
+mainPin.addEventListener('mouseup', function () {
+  showMap();
+});
+
+mainPin.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ENTER_KEYCODE) {
+    showMap();
+  }
+});
+
+/**
+ * showMap - показывает карту с указателями
+ *
+ */
+function showMap() {
+  // активируем карту и разблокируем форму
+  mapElement.classList.remove('map--faded');
+  form.classList.remove('notice__form--disabled');
+  for (j = 0; j < formFieldsets.length; j++) {
+    formFieldsets[j].disabled = false;
+  }
+  // показываем указатели и ставим на них обработчик клика
+  pins.forEach(function (item) {
+    item.classList.remove('hidden');
+  });
+  mapElement.addEventListener('click', onMapClick);
+}
+
+/**
+ * onPinClick - обработчик события клика мыши на указателях
+ *
+ * @param  {Event} evt event
+ */
+function onMapClick(evt) {
+  // если уже есть активный пин -удаляем у него класс активности
+  // если клик попал на потомков пина, помещаем его в переменную и добавляем класс
+  var pin = evt.target.closest('.map__pin');
+  if (pin) {
+    if (currentPin) {
+      currentPin.classList.remove('map__pin--active');
+    }
+    currentPin = pin;
+    currentPin.classList.add('map__pin--active');
+  }
+  // по атрибуту src в картинке находим нужный нам объект объявления и заполняем попап
+  var src = currentPin.children[0].getAttribute('src');
+  ads.forEach(function (item) {
+    if (item.author.avatar === src.toString()) {
+      fillCard(item, popupElement);
+    }
+  });
+  // показываем попап, задаем обработчики на события попапа
+  popupElement.classList.remove('hidden');
+  // кликаем на главный пин или крестик -закрываем поппап
+  if (currentPin === mainPin || event.target === popupClose) {
+    closePopup();
+  }
+  // закрываем попап по esc
+  document.addEventListener('keydown', onPopupEscPress);
+}
+
+/**
+ * closePopup - закрывает попап и убирает активный класс с указателя
+ *
+ */
+function closePopup() {
+  if (currentPin !== mainPin) {
+    currentPin.classList.remove('map__pin--active');
+  }
+  popupElement.classList.add('hidden');
+  document.removeEventListener('keydown', onPopupEscPress);
+}
+
+/**
+ * onPopupEscPress - обработчик события нажатия клавиши при открытом попапе
+ *
+ * @param  {Event} evt event
+ */
+function onPopupEscPress(evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+}
 
 /**
  * createNumbersArray - создает массив чисел
@@ -120,7 +229,7 @@ function getRandomElement(arr, noRepeat) {
 * @return {number} случайное число между min и max
 */
 function getRandomNumber(min, max) {
-  return Math.round(Math.random() * (max - min) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 /**
@@ -180,34 +289,44 @@ function generateAd() {
  */
 function createCloneElement(obj) {
   var cloneElement = buttonTemplate.cloneNode(true);
-  cloneElement.style.left = (obj.location['x'] - buttonWidth / 2) + 'px';
+  cloneElement.style.left = (obj.location['x']) + 'px';
   cloneElement.style.top = (obj.location['y'] + parseInt(buttonHeight, 10)) + 'px';
   cloneElement.querySelector('img').setAttribute('src', obj.author.avatar);
   return cloneElement;
 }
 
 /**
- * fillCard - возвращает карточку объявления с данными из объекта
+ * fillCard - заполняет карточку объявления данными из объекта
  *
  * @param  {Object} obj объект с данными
- * @return {Object} карта товара с данными
+ * @param  {Node} template заполняемый элемент
  */
-function fillCard(obj) {
-  var cloneCard = cardTemplate.cloneNode(true);
-  var featuresList = cloneCard.querySelector('.popup__features');
-  cloneCard.querySelector('h3').textContent = obj.offer.title;
-  cloneCard.querySelector('p small').textContent = obj.offer.address;
-  cloneCard.querySelector('.popup__price').textContent = obj.offer.price + ' &#x20bd;/ночь';
-  cloneCard.querySelector('h4').textContent = TYPES[obj.offer.type];
-  cloneCard.querySelector('p:nth-of-type(3)').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
-  cloneCard.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
+function fillCard(obj, template) {
+  var featuresList = template.querySelector('.popup__features');
+  template.querySelector('h3').textContent = obj.offer.title;
+  template.querySelector('p small').textContent = obj.offer.address;
+  template.querySelector('.popup__price').textContent = obj.offer.price + ' \u20bd/ночь';
+  template.querySelector('h4').textContent = TYPES[obj.offer.type];
+  template.querySelector('p:nth-of-type(3)').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
+  template.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
   featuresList.innerHTML = '';
   for (i = 0; i < obj.offer.features.length; i++) {
     var li = document.createElement('li');
     li.classList.add('feature', 'feature--' + obj.offer.features[i]);
     featuresList.appendChild(li);
   }
-  cloneCard.querySelector('p:nth-of-type(5)').textContent = obj.offer.description;
-  cloneCard.querySelector('.popup__avatar').setAttribute('src', obj.author.avatar);
+  template.querySelector('p:nth-of-type(5)').textContent = obj.offer.description;
+  template.querySelector('.popup__avatar').setAttribute('src', obj.author.avatar);
+}
+
+/**
+ * createCardElement - Возвращает скопированный с шаблона элемент с данными из объекта
+ *
+ * @param  {Object} obj объект с данными
+ * @return {Node} готовый элемент
+ */
+function createCardElement(obj) {
+  var cloneCard = cardTemplate.cloneNode(true);
+  fillCard(obj, cloneCard);
   return cloneCard;
 }
