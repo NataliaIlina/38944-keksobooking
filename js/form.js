@@ -7,7 +7,7 @@ var type = form.querySelector('#type');
 var price = form.querySelector('#price');
 var rooms = form.querySelector('#room_number');
 var guests = form.querySelector('#capacity');
-
+var title = form.querySelector('#title');
 
 // синхронизируем время заезда/выезда
 timein.addEventListener('change', function () {
@@ -54,5 +54,15 @@ rooms.addEventListener('change', function () {
       break;
     default:
       guests.value = 1;
+  }
+});
+
+title.addEventListener('input', function () {
+  if (title.value.length === 0) {
+    title.setCustomValidity('Поле заголовка обязательно для заполнения');
+  } else if (title.value.length < 30) {
+    title.setCustomValidity('Заголовок должен содержать минимум 30 символов');
+  } else {
+    title.setCustomValidity('');
   }
 });

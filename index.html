@@ -31,7 +31,7 @@
     </div>
 
     <div class="map__filters-container">
-      <form action="https://js.dump.academy/keksobooking" class="map__filters" autocomplete="off" method="post" enctype="multipart/form-data">
+      <form class="map__filters" autocomplete="off" method="post" enctype="multipart/form-data">
         <select name="housing-type" id="housing-type" class="map__filter">
           <option value="any" selected>Любой тип жилья</option>
           <option value="flat">Квартира</option>
@@ -85,7 +85,7 @@
   <div class="notice">
     <h2 class="notice__title">Ваше объявление</h2>
 
-    <form class="notice__form notice__form--disabled" method="post" enctype="multipart/form-data" autocomplete="off">
+    <form action="https://js.dump.academy/keksobooking" class="notice__form notice__form--disabled" method="post" enctype="multipart/form-data" autocomplete="off">
       <fieldset class="notice__header">
         <legend>Ваша фотография (для карты)</legend>
         <div class="notice__photo">
@@ -102,10 +102,10 @@
 
       <fieldset class="form__element form__element--wide">
         <label for="title">Заголовок объявления</label>
-        <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" required minlength="30" maxlength="100">
+        <input id="title" name="title" type="text" placeholder="Милая, уютная квартирка в центре Токио" minlength="30" maxlength="100" required>
       </fieldset>
 
-      <fieldset class="form__element form__element--wide" disabled>
+      <fieldset class="form__element form__element--wide">
         <label for="address">Адрес</label>
         <input id="address" name="address" type="text" required readonly>
       </fieldset>
