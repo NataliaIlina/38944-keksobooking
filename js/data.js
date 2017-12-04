@@ -12,7 +12,7 @@
     'Уютное бунгало далеко от моря',
     'Неуютное бунгало по колено в воде'
   ];
-  var TYPES = {
+  var TYPE = {
     flat: 'Квартира',
     house: 'Дом',
     bungalo: 'Бунгало'
@@ -30,11 +30,11 @@
     'elevator',
     'conditioner'
   ];
-  var ROOMS = {
+  var ROOMS_NUMBER = {
     min: 1,
     max: 5
   };
-  var LOCATIONS = {
+  var LOCATION = {
     x: {
       min: 300,
       max: 900
@@ -44,7 +44,7 @@
       max: 500
     }
   };
-  var PRICES = {
+  var PRICE = {
     min: 1000,
     max: 1000000,
     round: 100
@@ -66,20 +66,21 @@
     if (userNumber < 10) {
       userNumber = '0' + userNumber;
     }
-    var rooms = window.util.getRandomNumber(ROOMS.min, ROOMS.max);
+    var roomsNumber = window.util.getRandomNumber(ROOMS_NUMBER.min, ROOMS_NUMBER.max);
     var features = featuresArr.slice(0, window.util.getRandomNumber(1, featuresArr.length));
-    var locationX = window.util.getRandomNumber(LOCATIONS.x.min, LOCATIONS.x.max);
-    var locationY = window.util.getRandomNumber(LOCATIONS.y.min, LOCATIONS.y.max);
+    var locationX = window.util.getRandomNumber(LOCATION.x.min, LOCATION.x.max);
+    var locationY = window.util.getRandomNumber(LOCATION.y.min, LOCATION.y.max);
+
     ad.author = {
       avatar: 'img/avatars/user' + userNumber + '.png'
     };
     ad.offer = {
       title: window.util.getRandomElement(titlesArr, true),
       address: locationX + ', ' + locationY,
-      price: window.util.roundUpNumber(window.util.getRandomNumber(PRICES.min, PRICES.max), PRICES.round),
-      type: window.util.getRandomElement(Object.keys(TYPES)),
-      rooms: rooms,
-      guests: rooms * GUESTS_PER_ROOM,
+      price: window.util.roundUpNumber(window.util.getRandomNumber(PRICE.min, PRICE.max), PRICE.round),
+      type: window.util.getRandomElement(Object.keys(TYPE)),
+      rooms: roomsNumber,
+      guests: roomsNumber * GUESTS_PER_ROOM,
       checkin: window.util.getRandomElement(TIMES),
       checkout: window.util.getRandomElement(TIMES),
       features: features,
@@ -101,13 +102,13 @@
   function createAds() {
     var ads = [];
     for (var i = 0; i < NUMBER_OF_ADS; i++) {
-      ads[i] = generateAd(NUMBERS, TITLES, FEATURES);
+      ads.push(generateAd(NUMBERS, TITLES, FEATURES));
     }
     return ads;
   }
 
   window.data = {
-    types: {
+    type: {
       flat: 'Квартира',
       house: 'Дом',
       bungalo: 'Бунгало'

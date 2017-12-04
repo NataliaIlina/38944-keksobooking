@@ -1,10 +1,10 @@
 'use strict';
 
 (function () {
-  var mapElement = document.querySelector('.map');
+  var map = document.querySelector('.map');
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
   // добавляем карточку объявления на карту
-  mapElement.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', createCardElement(window.data.ads[0]));
+  map.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', createCardElement(window.data.ads[0]));
 
   /**
    * createCardElement - Возвращает скопированный с шаблона элемент с данными из объекта
@@ -29,7 +29,7 @@
     template.querySelector('h3').textContent = obj.offer.title;
     template.querySelector('p small').textContent = obj.offer.address;
     template.querySelector('.popup__price').textContent = obj.offer.price + ' \u20bd/ночь';
-    template.querySelector('h4').textContent = window.data.types[obj.offer.type];
+    template.querySelector('h4').textContent = window.data.type[obj.offer.type];
     template.querySelector('p:nth-of-type(3)').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
     template.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
     featuresList.innerHTML = '';
@@ -43,6 +43,6 @@
   }
 
   window.card = {
-    fillCard: fillCard
+    fill: fillCard
   };
 })();

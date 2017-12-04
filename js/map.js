@@ -2,12 +2,12 @@
 
 (function () {
   var map = document.querySelector('.map');
-  var mapPinsElement = document.querySelector('.map__pins');
+  var pinsWrapper = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
   var form = document.querySelector('.notice__form');
   var formFieldsets = form.querySelectorAll('fieldset');
-  var popupElement = document.querySelector('.popup');
-  var popupClose = popupElement.querySelector('.popup__close');
+  var popup = document.querySelector('.popup');
+  var popupClose = popup.querySelector('.popup__close');
   var currentPin = null;
   // переменные для drag'n'drop
   var mainPinHandle = map.querySelector('.map__pin--main img');
@@ -18,13 +18,13 @@
   var maxY = 500;
 
   // скрываем указатели по умолчанию
-  window.pin.pins.forEach(function (item) {
+  window.pin.list.forEach(function (item) {
     if (item !== mainPin) {
       item.classList.add('hidden');
     }
   });
   // скрываем попап по умолчанию
-  popupElement.classList.add('hidden');
+  popup.classList.add('hidden');
 
   // дизейблим филдсеты
   for (var i = 0; i < formFieldsets.length; i++) {
@@ -42,8 +42,8 @@
       y: evt.clientY - mainPin.offsetTop
     };
     // задаем обработчики
-    mapPinsElement.addEventListener('mousemove', onMouseMove);
-    mapPinsElement.addEventListener('mouseup', onMouseUp);
+    pinsWrapper.addEventListener('mousemove', onMouseMove);
+    pinsWrapper.addEventListener('mouseup', onMouseUp);
 
     function onMouseMove(moveEvt) {
       // дабы компенсировть слишком высокую планку в 100px, ставим координату Y в район самой верхней точки указателя
@@ -60,8 +60,8 @@
 
     function onMouseUp(upEvt) {
       upEvt.preventDefault();
-      mapPinsElement.removeEventListener('mousemove', onMouseMove);
-      mapPinsElement.removeEventListener('mouseup', onMouseUp);
+      pinsWrapper.removeEventListener('mousemove', onMouseMove);
+      pinsWrapper.removeEventListener('mouseup', onMouseUp);
     }
   });
 
@@ -81,7 +81,7 @@
       formFieldsets[i].disabled = false;
     }
     // показываем указатели и ставим на них обработчик клика
-    window.pin.pins.forEach(function (item) {
+    window.pin.list.forEach(function (item) {
       item.classList.remove('hidden');
     });
     map.addEventListener('click', onMapClick);
@@ -107,11 +107,11 @@
     var src = currentPin.children[0].getAttribute('src');
     window.data.ads.forEach(function (item) {
       if (item.author.avatar === src.toString()) {
-        window.card.fillCard(item, popupElement);
+        window.card.fill(item, popup);
       }
     });
     // показываем попап, задаем обработчики на события попапа
-    popupElement.classList.remove('hidden');
+    popup.classList.remove('hidden');
     // кликаем на главный пин или крестик -закрываем поппап
     if (currentPin === mainPin || event.target === popupClose) {
       closePopup();
@@ -128,7 +128,7 @@
     if (currentPin !== mainPin) {
       currentPin.classList.remove('map__pin--active');
     }
-    popupElement.classList.add('hidden');
+    popup.classList.add('hidden');
     document.removeEventListener('keydown', onPopupEscPress);
   }
 
