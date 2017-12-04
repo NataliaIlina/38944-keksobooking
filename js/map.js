@@ -54,7 +54,7 @@
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
-        formAddress.value = 'x: ' + mainPin.style.left + ', y: ' + (parseInt(mainPin.style.top, 10) + parseInt(pinHeight / 2, 10) + arrowHeight);
+        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + parseInt(pinHeight / 2, 10) + arrowHeight);
       }
     }
 
