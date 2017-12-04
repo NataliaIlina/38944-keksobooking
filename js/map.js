@@ -2,12 +2,20 @@
 
 (function () {
   var map = document.querySelector('.map');
+  var mapPinsElement = document.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
   var form = document.querySelector('.notice__form');
   var formFieldsets = form.querySelectorAll('fieldset');
   var popupElement = document.querySelector('.popup');
   var popupClose = popupElement.querySelector('.popup__close');
   var currentPin = null;
+  // переменные для drag'n'drop
+  var mainPinHandle = map.querySelector('.map__pin--main img');
+  var formAddress = form.querySelector('#address');
+  var pinHeight = mainPin.offsetHeight;
+  var arrowHeight = 10;
+  var minY = 100;
+  var maxY = 500;
 
   // скрываем указатели по умолчанию
   window.pin.pins.forEach(function (item) {
@@ -24,8 +32,37 @@
   }
 
   // события на главном указателе
-  mainPin.addEventListener('mouseup', function () {
+  // drag'n'drop
+  mainPinHandle.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
     showMap();
+    // считаем сдвиг мышки относительно краев передвигаемого эл-та
+    var mouseOffset = {
+      x: evt.clientX - mainPin.offsetLeft,
+      y: evt.clientY - mainPin.offsetTop
+    };
+    // задаем обработчики
+    mapPinsElement.addEventListener('mousemove', onMouseMove);
+    mapPinsElement.addEventListener('mouseup', onMouseUp);
+
+    function onMouseMove(moveEvt) {
+      // дабы компенсировть слишком высокую планку в 100px, ставим координату Y в район самой верхней точки указателя
+      var InitialY = moveEvt.clientY - mouseOffset.y - parseInt(pinHeight / 2, 10);
+      moveEvt.preventDefault();
+      if (InitialY > minY && InitialY < maxY) {
+        // двигаем элемент следом за мышью
+        mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
+        mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
+        // сразу передаем значения в поле адреса
+        formAddress.value = 'x: ' + mainPin.style.left + ', y: ' + (parseInt(mainPin.style.top, 10) + parseInt(pinHeight / 2, 10) + arrowHeight);
+      }
+    }
+
+    function onMouseUp(upEvt) {
+      upEvt.preventDefault();
+      mapPinsElement.removeEventListener('mousemove', onMouseMove);
+      mapPinsElement.removeEventListener('mouseup', onMouseUp);
+    }
   });
 
   mainPin.addEventListener('keydown', function (evt) {
