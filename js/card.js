@@ -4,19 +4,8 @@
   var map = document.querySelector('.map');
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
   // добавляем карточку объявления на карту
-  map.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', createCardElement(window.data.ads[0]));
+  map.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', cardTemplate.cloneNode(true));
 
-  /**
-   * createCardElement - Возвращает скопированный с шаблона элемент с данными из объекта
-   *
-   * @param  {Object} obj объект с данными
-   * @return {Node} готовый элемент
-   */
-  function createCardElement(obj) {
-    var cloneCard = cardTemplate.cloneNode(true);
-    fillCard(obj, cloneCard);
-    return cloneCard;
-  }
 
   /**
    * fillCard - заполняет карточку объявления данными из объекта
