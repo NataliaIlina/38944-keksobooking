@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Наталья Ильина](https://up.htmlacademy.ru/javascript/11/user/38944).
-* Наставник: [Антон Попов](https://htmlacademy.ru/profile/joker).
+* Наставник: [Дмитрий Ермаков](https://htmlacademy.ru/profile/id195904).
 
 ---
 
