@@ -108,11 +108,8 @@
   }
 
   window.data = {
-    type: {
-      flat: 'Квартира',
-      house: 'Дом',
-      bungalo: 'Бунгало'
-    },
+    type: TYPE,
+    location: LOCATION,
     ads: createAds()
   };
 })();

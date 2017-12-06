@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var ARROW_HEIGHT = 10;
   var map = document.querySelector('.map');
   var pinsWrapper = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
@@ -13,9 +14,8 @@
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
-  var arrowHeight = 10;
-  var minY = 100;
-  var maxY = 500;
+  var minY = window.data.location.y.min;
+  var maxY = window.data.location.y.max;
 
   // скрываем указатели по умолчанию
   window.pin.list.forEach(function (item) {
@@ -54,7 +54,7 @@
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
-        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + parseInt(pinHeight / 2, 10) + arrowHeight);
+        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + parseInt(pinHeight / 2, 10) + ARROW_HEIGHT);
       }
     }
 
