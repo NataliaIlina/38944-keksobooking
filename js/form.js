@@ -2,6 +2,7 @@
 
 (function () {
   var form = document.querySelector('.notice__form');
+  var formInputs = form.querySelectorAll('input');
   var address = form.querySelector('#address');
   var timein = form.querySelector('#timein');
   var timeout = form.querySelector('#timeout');
@@ -14,7 +15,8 @@
   var inputError = {
     tooShort: 'Заголовок должен содержать минимум 30 символов',
     tooLong: 'Заголовок не должен содержать более 100 символов',
-    noValue: 'Поле заголовка обязательно для заполнения'
+    noValue: 'Поле заголовка обязательно для заполнения',
+    style: '2px solid red'
   };
 
   if (!form.classList.contains('.notice__form--disabled')) {
@@ -28,19 +30,39 @@
     roomsNumber.addEventListener('change', onRoomsNumberChange);
     // ставим сообщения для поля заголовка
     title.addEventListener('invalid', onTitleInvalid);
-    // проверяем форму при отправке (для Edge)
+    // проверяем форму при отправке
     form.addEventListener('submit', function (evt) {
       evt.preventDefault();
-      if (title.value.length < minLength) {
-        title.setCustomValidity(inputError.tooShort);
+      for (var i = 0; i < formInputs.length; i++) {
+        setErrorStyle(formInputs[i], true);
+      }
+      if (!title.value) {
+        setErrorStyle(title);
       } else if (!address.value) {
-        address.style.outline = '2px solid red';
+        setErrorStyle(address);
+      } else if (guestsNumber.value > roomsNumber.value) {
+        setErrorStyle(guestsNumber);
+      } else if (price.value < price.min) {
+        setErrorStyle(price);
       } else {
         form.submit();
       }
     });
   }
 
+  /**
+   * setErrorStyle - устанавливает/обнуляет стиль для поля с ошибкой
+   *
+   * @param  {Object} field  поле, с которым работаем
+   * @param  {boolean} [remove] если указано - обнуляем стиль
+   */
+  function setErrorStyle(field, remove) {
+    if (remove) {
+      field.style.outline = '';
+    } else {
+      field.style.outline = inputError.style;
+    }
+  }
 
   // обработчики событий изменения полей формы
   function onTimeinChange() {
@@ -91,14 +113,20 @@
 
   function onTitleInvalid() {
     var validity = title.validity;
-    if (validity.tooShort) {
-      title.setCustomValidity(inputError.tooShort);
+    var error = '';
+    if (validity.tooShort || (title.value.length !== 0 && title.value.length < minLength)) {
+      error = inputError.tooShort;
+      setErrorStyle(title);
     } else if (validity.tooLong) {
-      title.setCustomValidity(inputError.tooLong);
+      error = inputError.tooLong;
+      setErrorStyle(title);
     } else if (validity.valueMissing) {
-      title.setCustomValidity(inputError.noValue);
+      error = inputError.noValue;
+      setErrorStyle(title);
     } else {
-      title.setCustomValidity('');
+      error = '';
+      title.style.outline = '';
     }
+    title.setCustomValidity(error);
   }
 })();
