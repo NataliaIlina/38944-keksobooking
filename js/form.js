@@ -37,7 +37,6 @@
     timeout.addEventListener('change', function () {
       syncTimes(timeout, timein);
     });
-
     // выставляем минимальную цену в зависимости от выбранного типа жилья
     type.addEventListener('change', function () {
       syncPriceWithType();
@@ -47,7 +46,8 @@
       syncGuestsWithRooms();
     });
     // ставим сообщения для поля заголовка
-    title.addEventListener('invalid', onTitleInvalid);
+    title.addEventListener('input', onTitleInput);
+
     // проверяем форму при отправке
     form.addEventListener('submit', function (evt) {
       evt.preventDefault();
@@ -130,7 +130,7 @@
    * onTitleInvalid - показывает пользователю сообщения при невалидном значении поля title
    *
    */
-  function onTitleInvalid() {
+  function onTitleInput() {
     var validity = title.validity;
     var error = '';
     if (validity.tooShort || (title.value.length !== 0 && title.value.length < minLength)) {
