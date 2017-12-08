@@ -12,6 +12,12 @@
   var guestsNumber = form.querySelector('#capacity');
   var title = form.querySelector('#title');
   var minLength = parseInt(title.getAttribute('minlength'), 10);
+  var minPrices = {
+    bungalo: 0,
+    flat: 1000,
+    house: 5000,
+    palace: 10000
+  };
   var inputError = {
     tooShort: 'Заголовок должен содержать минимум 30 символов',
     tooLong: 'Заголовок не должен содержать более 100 символов',
@@ -19,15 +25,27 @@
     style: '2px solid red'
   };
 
+  // при обновлении страницы синхронизируются поля комнаты/гости и тип/минимальная цена
+  syncGuestsWithRooms();
+  syncPriceWithType();
+
   if (!form.classList.contains('.notice__form--disabled')) {
     // синхронизируем время заезда/выезда
-    timein.addEventListener('change', onTimeinChange);
-    timeout.addEventListener('change', onTimeoutChange);
+    timein.addEventListener('change', function () {
+      syncTimes(timein, timeout);
+    });
+    timeout.addEventListener('change', function () {
+      syncTimes(timeout, timein);
+    });
 
-    // выставляем минимальную цену в зависимости от выбранного типажилья
-    type.addEventListener('change', onTypeChange);
+    // выставляем минимальную цену в зависимости от выбранного типа жилья
+    type.addEventListener('change', function () {
+      syncPriceWithType();
+    });
     // количество гостей по количеству комнат
-    roomsNumber.addEventListener('change', onRoomsNumberChange);
+    roomsNumber.addEventListener('change', function () {
+      syncGuestsWithRooms();
+    });
     // ставим сообщения для поля заголовка
     title.addEventListener('invalid', onTitleInvalid);
     // проверяем форму при отправке
@@ -40,8 +58,6 @@
         setErrorStyle(title);
       } else if (!address.value) {
         setErrorStyle(address);
-      } else if (guestsNumber.value > roomsNumber.value) {
-        setErrorStyle(guestsNumber);
       } else if (price.value < price.min) {
         setErrorStyle(price);
       } else {
@@ -64,53 +80,56 @@
     }
   }
 
-  // обработчики событий изменения полей формы
-  function onTimeinChange() {
-    timeout.value = timein.value;
+  /**
+   * syncTimes - синхронизирует значение второго элемента с первым
+   *
+   * @param {Node} firstTime первый элемент
+   * @param {Node} secondTime второй элемент
+   */
+  function syncTimes(firstTime, secondTime) {
+    secondTime.value = firstTime.value;
   }
 
-  function onTimeoutChange() {
-    timein.value = timeout.value;
+  /**
+   * syncPriceWithType - синхронизирует значение минимальной цены с типом жилья
+   *
+   */
+  function syncPriceWithType() {
+    price.min = minPrices[type.value];
   }
 
-  function onTypeChange() {
-    switch (type.value) {
-      case 'flat':
-        price.min = 1000;
-        break;
-      case 'bungalo':
-        price.min = 0;
-        break;
-      case 'house':
-        price.min = 5000;
-        break;
-      case 'palace':
-        price.min = 10000;
-        break;
-      default:
-        price.min = 0;
+  /**
+   * syncGuestsWithRooms - синхронизирует кол-во гостей с кол-вом комнат
+   *
+   */
+  function syncGuestsWithRooms() {
+    for (var i = 0; i < guestsNumber.options.length; i++) {
+      guestsNumber.options[i].disabled = true;
+    }
+
+    if (roomsNumber.value === '100') {
+      guestsNumber.options[3].disabled = false;
+    } else if (roomsNumber.value === '1') {
+      guestsNumber.options[2].disabled = false;
+    } else if (roomsNumber.value === '2') {
+      guestsNumber.options[1].disabled = false;
+      guestsNumber.options[2].disabled = false;
+    } else if (roomsNumber.value === '3') {
+      guestsNumber.options[0].disabled = false;
+      guestsNumber.options[1].disabled = false;
+      guestsNumber.options[2].disabled = false;
+    }
+
+    if (roomsNumber.value === '100') {
+      guestsNumber.value = '0';
+    } else {
+      guestsNumber.value = roomsNumber.value;
     }
   }
-
-  function onRoomsNumberChange() {
-    switch (roomsNumber.value) {
-      case '1':
-        guestsNumber.value = 1;
-        break;
-      case '2':
-        guestsNumber.value = 2;
-        break;
-      case '3':
-        guestsNumber.value = 3;
-        break;
-      case '100':
-        guestsNumber.value = 0;
-        break;
-      default:
-        guestsNumber.value = 1;
-    }
-  }
-
+  /**
+   * onTitleInvalid - показывает пользователю сообщения при невалидном значении поля title
+   *
+   */
   function onTitleInvalid() {
     var validity = title.validity;
     var error = '';
