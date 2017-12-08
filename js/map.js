@@ -17,8 +17,12 @@
   var minY = window.data.location.y.min;
   var maxY = window.data.location.y.max;
 
+  // отрисовываем пины на основе массива, получаем массив пинов
+  window.pin.render(window.data.ads);
+  var pins = Array.prototype.slice.call(pinsWrapper.querySelectorAll('.map__pin'));
+
   // скрываем указатели по умолчанию
-  window.pin.list.forEach(function (item) {
+  pins.forEach(function (item) {
     if (item !== mainPin) {
       item.classList.add('hidden');
     }
@@ -81,7 +85,7 @@
       formFieldsets[i].disabled = false;
     }
     // показываем указатели и ставим на них обработчик клика
-    window.pin.list.forEach(function (item) {
+    pins.forEach(function (item) {
       item.classList.remove('hidden');
     });
     map.addEventListener('click', onMapClick);
