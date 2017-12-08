@@ -17,14 +17,14 @@
   /**
    * createCloneElement - возвращает объект, заполненный данными из массива
    *
-   * @param  {Object} obj объект с данными
+   * @param  {ad} ad объект с данными
    * @return {Node} скопированный с шаблона элемент с данными
    */
-  function createPin(obj) {
+  function createPin(ad) {
     var cloneElement = pinTemplate.cloneNode(true);
-    cloneElement.style.left = (obj.location['x']) + 'px';
-    cloneElement.style.top = (obj.location['y'] + parseInt(pinHeight, 10)) + 'px';
-    cloneElement.querySelector('img').setAttribute('src', obj.author.avatar);
+    cloneElement.style.left = (ad.location['x']) + 'px';
+    cloneElement.style.top = (ad.location['y'] + parseInt(pinHeight, 10)) + 'px';
+    cloneElement.querySelector('img').setAttribute('src', ad.author.avatar);
     return cloneElement;
   }
 

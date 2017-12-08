@@ -47,14 +47,14 @@
 
     function onMouseMove(moveEvt) {
       // дабы компенсировть слишком высокую планку в 100px, ставим координату Y в район самой верхней точки указателя
-      var InitialY = moveEvt.clientY - mouseOffset.y - parseInt(pinHeight / 2, 10);
+      var initialY = moveEvt.clientY - mouseOffset.y - pinHeight / 2;
       moveEvt.preventDefault();
-      if (InitialY > minY && InitialY < maxY) {
+      if (initialY > minY && initialY < maxY) {
         // двигаем элемент следом за мышью
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
-        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + parseInt(pinHeight / 2, 10) + ARROW_HEIGHT);
+        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
       }
     }
 
@@ -90,7 +90,7 @@
   /**
    * onPinClick - обработчик события клика мыши на указателях
    *
-   * @param  {Event} evt event
+   * @param  {Event} evt
    */
   function onMapClick(evt) {
     // если уже есть активный пин -удаляем у него класс активности
@@ -135,7 +135,7 @@
   /**
    * onPopupEscPress - обработчик события нажатия клавиши при открытом попапе
    *
-   * @param  {Event} evt event
+   * @param  {Event} evt
    */
   function onPopupEscPress(evt) {
     window.handlers.isEscPressed(evt, closePopup);

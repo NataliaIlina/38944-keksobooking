@@ -9,8 +9,8 @@
     /**
      * Вызывает заданную функцию при нажатии клавиши Enter
      *
-     * @param  {Event} evt Event
-     * @param  {function} action функция
+     * @param  {Event} evt
+     * @param  {function} action
      */
     isEnterPressed: function (evt, action) {
       if (evt.keyCode === ENTER_KEYCODE) {
@@ -21,8 +21,8 @@
     /**
      * Вызывает заданную функцию при нажатии клавиши Esc
      *
-     * @param  {Event} evt Event
-     * @param  {function} action функция
+     * @param  {Event} evt
+     * @param  {function} action
      */
     isEscPressed: function (evt, action) {
       if (evt.keyCode === ESC_KEYCODE) {

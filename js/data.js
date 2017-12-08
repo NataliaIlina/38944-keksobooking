@@ -53,21 +53,26 @@
   var NUMBER_OF_ADS = 8;
 
   /**
+   * объект объявления
+   * @typedef {Object} Ad
+   */
+
+  /**
    * generateAd - возвращает объект объявления, созданный на основе данных, полученных из массивов
    *
-   * @param  {Array} numbersArr  числовой массив
-   * @param  {Array} titlesArr   массив с заголовками
-   * @param  {Array} featuresArr массив с удобствами
-   * @return {Object} объект объявления
+   * @param  {Array} numbers числовой массив
+   * @param  {Array} titles массив с заголовками
+   * @param  {Array} features массив с удобствами
+   * @return {Ad} объект
    */
-  function generateAd(numbersArr, titlesArr, featuresArr) {
+  function generateAd(numbers, titles, features) {
     var ad = {};
-    var userNumber = window.util.getRandomElement(numbersArr, true);
+    var userNumber = window.util.getRandomElement(numbers, true);
     if (userNumber < 10) {
       userNumber = '0' + userNumber;
     }
     var roomsNumber = window.util.getRandomNumber(ROOMS_NUMBER.min, ROOMS_NUMBER.max);
-    var features = featuresArr.slice(0, window.util.getRandomNumber(1, featuresArr.length));
+    var randomFeatures = features.slice(0, window.util.getRandomNumber(1, features.length));
     var locationX = window.util.getRandomNumber(LOCATION.x.min, LOCATION.x.max);
     var locationY = window.util.getRandomNumber(LOCATION.y.min, LOCATION.y.max);
 
@@ -75,7 +80,7 @@
       avatar: 'img/avatars/user' + userNumber + '.png'
     };
     ad.offer = {
-      title: window.util.getRandomElement(titlesArr, true),
+      title: window.util.getRandomElement(titles, true),
       address: locationX + ', ' + locationY,
       price: window.util.roundUpNumber(window.util.getRandomNumber(PRICE.min, PRICE.max), PRICE.round),
       type: window.util.getRandomElement(Object.keys(TYPE)),
@@ -83,7 +88,7 @@
       guests: roomsNumber * GUESTS_PER_ROOM,
       checkin: window.util.getRandomElement(TIMES),
       checkout: window.util.getRandomElement(TIMES),
-      features: features,
+      features: randomFeatures,
       description: '',
       photos: []
     };
@@ -97,7 +102,7 @@
   /**
    * createAds - возвращает массив из сгенерированных объектов
    *
-   * @return {Array}  массив
+   * @return {Ad[]} массив
    */
   function createAds() {
     var ads = [];

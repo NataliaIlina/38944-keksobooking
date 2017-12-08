@@ -21,16 +21,12 @@
     * getRandomElement - возвращает значение случайного элемента заданного массива
     *
     * @param {Array} arr массив
-    * @param {boolean} noRepeat если true, вырезаем элемент из массива
+    * @param {boolean} [noRepeat] если true, вырезаем элемент из массива
     * @return {*} случайный элемент массива
     */
     getRandomElement: function (arr, noRepeat) {
       var index = Math.floor(Math.random() * arr.length);
-      if (noRepeat) {
-        return arr.splice(index, 1);
-      } else {
-        return arr[index];
-      }
+      return noRepeat ? arr.splice(index, 1) : arr[index];
     },
 
     /**
