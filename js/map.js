@@ -16,6 +16,8 @@
   var pinHeight = mainPin.offsetHeight;
   var minY = window.data.location.y.min;
   var maxY = window.data.location.y.max;
+  var minX = window.data.location.x.min;
+  var maxX = window.data.location.x.max;
 
   // отрисовываем пины на основе массива, получаем массив пинов
   window.pin.render(window.data.ads);
@@ -53,7 +55,8 @@
       // дабы компенсировть слишком высокую планку в 100px, ставим координату Y в район самой верхней точки указателя
       var initialY = moveEvt.clientY - mouseOffset.y - pinHeight / 2;
       moveEvt.preventDefault();
-      if (initialY > minY && initialY < maxY) {
+      var initialX = moveEvt.clientX - mouseOffset.x;
+      if (initialY > minY && initialY < maxY && initialX > minX && initialX < maxX) {
         // двигаем элемент следом за мышью
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
