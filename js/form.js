@@ -21,7 +21,9 @@
   var inputError = {
     tooShort: 'Заголовок должен содержать минимум 30 символов',
     tooLong: 'Заголовок не должен содержать более 100 символов',
-    noValue: 'Поле заголовка обязательно для заполнения',
+    noValue: 'Поле обязательно для заполнения',
+    lowPrice: 'Минимально возможная цена для выбранного типа жилья: ' + minPrices[type.value],
+    highPrice: 'Указанная цена не может быть больше ' + price.max,
     style: '2px solid red'
   };
 
@@ -47,6 +49,7 @@
     });
     // ставим сообщения для поля заголовка
     title.addEventListener('input', onTitleInput);
+    price.addEventListener('input', onPriceInput);
 
     // проверяем форму при отправке
     form.addEventListener('submit', function (evt) {
@@ -58,8 +61,6 @@
         setErrorStyle(title);
       } else if (!address.value) {
         setErrorStyle(address);
-      } else if (price.value < price.min) {
-        setErrorStyle(price);
       } else {
         form.submit();
       }
@@ -120,32 +121,56 @@
       guestsNumber.options[2].disabled = false;
     }
 
-    if (roomsNumber.value === '100') {
-      guestsNumber.value = '0';
-    } else {
-      guestsNumber.value = roomsNumber.value;
-    }
+    guestsNumber.value = roomsNumber.value === '100' ? '0' : roomsNumber.value;
   }
+
   /**
-   * onTitleInvalid - показывает пользователю сообщения при невалидном значении поля title
+   * onTitleInput - показывает пользователю сообщения при невалидном значении поля title
    *
    */
   function onTitleInput() {
-    var validity = title.validity;
     var error = '';
-    if (validity.tooShort || (title.value.length !== 0 && title.value.length < minLength)) {
+
+    if (!title.validity.valid) {
+      setErrorStyle(title);
+    }
+
+    if (title.validity.tooShort || (title.value.length !== 0 && title.value.length < minLength)) {
       error = inputError.tooShort;
-      setErrorStyle(title);
-    } else if (validity.tooLong) {
+    } else if (title.validity.tooLong) {
       error = inputError.tooLong;
-      setErrorStyle(title);
-    } else if (validity.valueMissing) {
+    } else if (title.validity.valueMissing) {
       error = inputError.noValue;
-      setErrorStyle(title);
     } else {
       error = '';
-      title.style.outline = '';
+      setErrorStyle(title, true);
     }
+
     title.setCustomValidity(error);
+  }
+
+  /**
+   * onPriceInput - показывает пользователю сообщения при невалидном значении поля price
+   *
+   */
+  function onPriceInput() {
+    var error = '';
+
+    if (!price.validity.valid) {
+      setErrorStyle(price);
+    }
+
+    if (price.validity.rangeUnderflow) {
+      error = inputError.lowPrice;
+    } else if (price.validity.rangeOverflow) {
+      error = inputError.highPrice;
+    } else if (price.validity.valueMissing) {
+      error = inputError.noValue;
+    } else {
+      error = '';
+      setErrorStyle(price, true);
+    }
+
+    price.setCustomValidity(error);
   }
 })();
