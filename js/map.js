@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var ARROW_HEIGHT = 10;
   var map = document.querySelector('.map');
   var pinsWrapper = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
@@ -13,12 +14,17 @@
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
-  var arrowHeight = 10;
-  var minY = 100;
-  var maxY = 500;
+  var minY = window.data.location.y.min;
+  var maxY = window.data.location.y.max;
+  var minX = window.data.location.x.min;
+  var maxX = window.data.location.x.max;
+
+  // отрисовываем пины на основе массива, получаем массив пинов
+  window.pin.render(window.data.ads);
+  var pins = Array.prototype.slice.call(pinsWrapper.querySelectorAll('.map__pin'));
 
   // скрываем указатели по умолчанию
-  window.pin.list.forEach(function (item) {
+  pins.forEach(function (item) {
     if (item !== mainPin) {
       item.classList.add('hidden');
     }
@@ -47,14 +53,15 @@
 
     function onMouseMove(moveEvt) {
       // дабы компенсировть слишком высокую планку в 100px, ставим координату Y в район самой верхней точки указателя
-      var InitialY = moveEvt.clientY - mouseOffset.y - parseInt(pinHeight / 2, 10);
+      var initialY = moveEvt.clientY - mouseOffset.y - pinHeight / 2;
       moveEvt.preventDefault();
-      if (InitialY > minY && InitialY < maxY) {
+      var initialX = moveEvt.clientX - mouseOffset.x;
+      if (initialY > minY && initialY < maxY && initialX > minX && initialX < maxX) {
         // двигаем элемент следом за мышью
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
-        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + parseInt(pinHeight / 2, 10) + arrowHeight);
+        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
       }
     }
 
@@ -81,7 +88,7 @@
       formFieldsets[i].disabled = false;
     }
     // показываем указатели и ставим на них обработчик клика
-    window.pin.list.forEach(function (item) {
+    pins.forEach(function (item) {
       item.classList.remove('hidden');
     });
     map.addEventListener('click', onMapClick);
@@ -90,7 +97,7 @@
   /**
    * onPinClick - обработчик события клика мыши на указателях
    *
-   * @param  {Event} evt event
+   * @param  {Event} evt
    */
   function onMapClick(evt) {
     // если уже есть активный пин -удаляем у него класс активности
@@ -135,7 +142,7 @@
   /**
    * onPopupEscPress - обработчик события нажатия клавиши при открытом попапе
    *
-   * @param  {Event} evt event
+   * @param  {Event} evt
    */
   function onPopupEscPress(evt) {
     window.handlers.isEscPressed(evt, closePopup);
