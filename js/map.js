@@ -19,6 +19,7 @@
   var minX = window.data.location.x.min;
   var maxX = window.data.location.x.max;
 
+
   // отрисовываем пины на основе массива, получаем массив пинов
   window.pin.render(window.data.ads);
   var pins = Array.prototype.slice.call(pinsWrapper.querySelectorAll('.map__pin'));
@@ -33,10 +34,7 @@
   popup.classList.add('hidden');
 
   // дизейблим филдсеты
-  for (var i = 0; i < formFieldsets.length; i++) {
-    formFieldsets[i].disabled = true;
-  }
-
+  disableForm();
   // события на главном указателе
   // drag'n'drop
   mainPinHandle.addEventListener('mousedown', function (evt) {
@@ -76,6 +74,17 @@
     window.handlers.isEnterPressed(evt, showMap);
   });
 
+  // -----------------функции----------------------------
+  /**
+   * disableForm - переключает блокировку всех полей формы на обратную
+   *
+   */
+  function disableForm() {
+    for (var i = 0; i < formFieldsets.length; i++) {
+      formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
+    }
+  }
+
   /**
    * showMap - показывает карту с указателями
    *
@@ -84,9 +93,7 @@
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
-    for (i = 0; i < formFieldsets.length; i++) {
-      formFieldsets[i].disabled = false;
-    }
+    disableForm();
     // показываем указатели и ставим на них обработчик клика
     pins.forEach(function (item) {
       item.classList.remove('hidden');
