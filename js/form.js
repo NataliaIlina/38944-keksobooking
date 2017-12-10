@@ -3,7 +3,6 @@
 (function () {
   var form = document.querySelector('.notice__form');
   var formInputs = form.querySelectorAll('input');
-  var address = form.querySelector('#address');
   var timein = form.querySelector('#timein');
   var timeout = form.querySelector('#timeout');
   var type = form.querySelector('#type');
@@ -12,41 +11,48 @@
   var guestsNumber = form.querySelector('#capacity');
   var title = form.querySelector('#title');
   var minLength = parseInt(title.getAttribute('minlength'), 10);
-  var minPrices = {
-    bungalo: 0,
-    flat: 1000,
-    house: 5000,
-    palace: 10000
-  };
+  var types = [
+    'bungalo',
+    'flat',
+    'house',
+    'palace'
+  ];
+  var minPrices = [0, 1000, 5000, 10000];
+  var rooms = ['1', '2', '3', '100'];
+  var guests = ['1', '2', '3', '0'];
   var inputError = {
     tooShort: 'Заголовок должен содержать минимум 30 символов',
     tooLong: 'Заголовок не должен содержать более 100 символов',
     noValue: 'Поле обязательно для заполнения',
-    lowPrice: 'Минимально возможная цена для выбранного типа жилья: ' + minPrices[type.value],
+    lowPrice: 'Указанная цена меньше минимальной',
     highPrice: 'Указанная цена не может быть больше ' + price.max,
     style: '2px solid red'
   };
 
   // при обновлении страницы синхронизируются поля комнаты/гости и тип/минимальная цена
-  syncGuestsWithRooms();
-  syncPriceWithType();
+  window.synchronizeFields(roomsNumber, guestsNumber, rooms, guests, syncGuestsWithRooms);
+  window.synchronizeFields(type, price, types, minPrices, syncPriceWithType);
 
   if (!form.classList.contains('.notice__form--disabled')) {
     // синхронизируем время заезда/выезда
     timein.addEventListener('change', function () {
-      syncTimes(timein, timeout);
+      window.synchronizeFields(timein, timeout, window.data.times, window.data.times, syncSelects);
     });
+
     timeout.addEventListener('change', function () {
-      syncTimes(timeout, timein);
+      window.synchronizeFields(timeout, timein, window.data.times, window.data.times, syncSelects);
     });
+
     // выставляем минимальную цену в зависимости от выбранного типа жилья
     type.addEventListener('change', function () {
-      syncPriceWithType();
+      window.synchronizeFields(type, price, types, minPrices, syncPriceWithType);
     });
+
     // количество гостей по количеству комнат
     roomsNumber.addEventListener('change', function () {
-      syncGuestsWithRooms();
+      window.synchronizeFields(roomsNumber, guestsNumber, rooms, guests, syncGuestsWithRooms);
     });
+
     // ставим сообщения для поля заголовка
     title.addEventListener('input', onTitleInput);
     price.addEventListener('input', onPriceInput);
@@ -57,14 +63,62 @@
       for (var i = 0; i < formInputs.length; i++) {
         setErrorStyle(formInputs[i], true);
       }
-      if (!title.value) {
+      if (!title.validity.valid) {
         setErrorStyle(title);
-      } else if (!address.value) {
-        setErrorStyle(address);
+      } else if (!price.validity.valid) {
+        setErrorStyle(price);
       } else {
         form.submit();
       }
     });
+  }
+
+  /**
+   * syncSelects - задает полю указанное значение value
+   *
+   * @param {Node} element
+   * @param {string} value
+   */
+  function syncSelects(element, value) {
+    element.value = value;
+  }
+
+  /**
+   * syncPriceWithType - задает полю указанное значение min
+   *
+   * @param {Node} element
+   * @param {number} value
+   */
+  function syncPriceWithType(element, value) {
+    element.min = value;
+  }
+
+  /**
+   * syncGuestsWithRooms - синхронизирует кол-во гостей с кол-вом комнат
+   *
+   * @param {Node} guestsElement
+   * @param {string} guestsValue
+   */
+  function syncGuestsWithRooms(guestsElement, guestsValue) {
+    guestsElement.value = guestsValue;
+    // получаем текущее значение кол-ва гостей
+    var currentValue = guestsElement.value;
+
+    for (var i = 0; i < guestsElement.options.length; i++) {
+      // дизейблим все
+      guestsElement.options[i].disabled = true;
+      // если текущее значение 0, оставляем доступным только его
+      if (currentValue === '0') {
+        if (guestsElement.options[i].value === currentValue) {
+          guestsElement.options[i].disabled = false;
+        }
+      } else {
+        // в противном случае делаем доступными все значения меньше текущего и не равные 0
+        if (guestsElement.options[i].value <= currentValue && guestsElement.options[i].value !== '0') {
+          guestsElement.options[i].disabled = false;
+        }
+      }
+    }
   }
 
   /**
@@ -79,49 +133,6 @@
     } else {
       field.style.outline = inputError.style;
     }
-  }
-
-  /**
-   * syncTimes - синхронизирует значение второго элемента с первым
-   *
-   * @param {Node} firstTime первый элемент
-   * @param {Node} secondTime второй элемент
-   */
-  function syncTimes(firstTime, secondTime) {
-    secondTime.value = firstTime.value;
-  }
-
-  /**
-   * syncPriceWithType - синхронизирует значение минимальной цены с типом жилья
-   *
-   */
-  function syncPriceWithType() {
-    price.min = minPrices[type.value];
-  }
-
-  /**
-   * syncGuestsWithRooms - синхронизирует кол-во гостей с кол-вом комнат
-   *
-   */
-  function syncGuestsWithRooms() {
-    for (var i = 0; i < guestsNumber.options.length; i++) {
-      guestsNumber.options[i].disabled = true;
-    }
-
-    if (roomsNumber.value === '100') {
-      guestsNumber.options[3].disabled = false;
-    } else if (roomsNumber.value === '1') {
-      guestsNumber.options[2].disabled = false;
-    } else if (roomsNumber.value === '2') {
-      guestsNumber.options[1].disabled = false;
-      guestsNumber.options[2].disabled = false;
-    } else if (roomsNumber.value === '3') {
-      guestsNumber.options[0].disabled = false;
-      guestsNumber.options[1].disabled = false;
-      guestsNumber.options[2].disabled = false;
-    }
-
-    guestsNumber.value = roomsNumber.value === '100' ? '0' : roomsNumber.value;
   }
 
   /**

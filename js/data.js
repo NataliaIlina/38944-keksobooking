@@ -115,6 +115,7 @@
   window.data = {
     type: TYPE,
     location: LOCATION,
+    times: TIMES,
     ads: createAds()
   };
 })();
