@@ -19,18 +19,6 @@
   var minX = window.data.location.x.min;
   var maxX = window.data.location.x.max;
 
-
-  // отрисовываем пины на основе массива, получаем массив пинов
-  // window.pin.render(window.data.ads);
-  window.backend.load(window.pin.render);
-
-  var pins = Array.prototype.slice.call(pinsWrapper.querySelectorAll('.map__pin'));
-  // скрываем указатели по умолчанию
-  pins.forEach(function (item) {
-    if (item !== mainPin) {
-      item.classList.add('hidden');
-    }
-  });
   // скрываем попап по умолчанию
   popup.classList.add('hidden');
 
@@ -91,14 +79,12 @@
    *
    */
   function showMap() {
+    // показываем пины
+    window.backend.load(window.pin.render);
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     disableForm();
-    // показываем указатели и ставим на них обработчик клика
-    pins.forEach(function (item) {
-      item.classList.remove('hidden');
-    });
     map.addEventListener('click', onMapClick);
   }
 
