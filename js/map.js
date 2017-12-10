@@ -21,9 +21,10 @@
 
 
   // отрисовываем пины на основе массива, получаем массив пинов
-  window.pin.render(window.data.ads);
-  var pins = Array.prototype.slice.call(pinsWrapper.querySelectorAll('.map__pin'));
+  // window.pin.render(window.data.ads);
+  window.backend.load(window.pin.render);
 
+  var pins = Array.prototype.slice.call(pinsWrapper.querySelectorAll('.map__pin'));
   // скрываем указатели по умолчанию
   pins.forEach(function (item) {
     if (item !== mainPin) {
