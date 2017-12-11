@@ -11,14 +11,14 @@
       if (xhr.status === 200) {
         onLoad(xhr.response);
       } else {
-        onError('Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
+        onError('Произошла ошибка. Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
     xhr.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
     });
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+      onError('Запрос не успел выполниться за ' + xhr.timeout / 1000 + 'с');
     });
 
     xhr.timeout = 5000;
@@ -34,14 +34,14 @@
       if (xhr.status === 200) {
         onLoad(xhr.response);
       } else {
-        onError('Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
+        onError('Произошла ошибка. Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
       }
     });
     xhr.addEventListener('error', function () {
       onError('Произошла ошибка соединения');
     });
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
+      onError('Запрос не успел выполниться за ' + xhr.timeout / 1000 + 'с');
     });
 
     xhr.timeout = 5000;

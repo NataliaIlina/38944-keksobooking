@@ -65,13 +65,25 @@
 
   // -----------------функции----------------------------
   /**
-   * disableForm - переключает блокировку всех полей формы на обратную
+   * changeFormAccessibility - переключает блокировку всех полей формы на обратную
    *
    */
   function changeFormAccessibility() {
     for (var i = 0; i < formFieldsets.length; i++) {
       formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
     }
+  }
+
+  /**
+   * renderErrorPopup - отрисовывает попап с сообщением об ошибке
+   *
+   * @param {string} message
+   */
+  function renderErrorPopup(message) {
+    var errorPopup = document.createElement('div');
+    errorPopup.textContent = message;
+    errorPopup.style = 'padding: 30px 40px; color: white; font-size: 25px; text-align: center; background-color: #ff5635; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100';
+    document.body.insertAdjacentElement('afterbegin', errorPopup);
   }
 
   /**
@@ -110,7 +122,7 @@
    */
   function showMap() {
     // показываем пины
-    window.backend.load(renderMap);
+    window.backend.load(renderMap, renderErrorPopup);
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
