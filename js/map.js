@@ -23,7 +23,7 @@
   popup.classList.add('hidden');
 
   // дизейблим филдсеты
-  disableForm();
+  changeFormAccessibility();
   // события на главном указателе
   // drag'n'drop
   mainPinHandle.addEventListener('mousedown', function (evt) {
@@ -68,7 +68,7 @@
    * disableForm - переключает блокировку всех полей формы на обратную
    *
    */
-  function disableForm() {
+  function changeFormAccessibility() {
     for (var i = 0; i < formFieldsets.length; i++) {
       formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
     }
@@ -77,7 +77,7 @@
   /**
    * renderMap - при успешной загрузке данных с сервера заполняет данными пины и попапы на карте
    *
-   * @param {Array} ads массив объявлений
+   * @param {ad[]} ads
    */
   function renderMap(ads) {
     window.pin.render(ads);
@@ -92,7 +92,7 @@
       }
       // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
       var index = currentPin.getAttribute('id');
-      window.card.fill(ads[index], popup);
+      window.showCard(ads[index], popup);
       // показываем попап, задаем обработчики на события попапа
       popup.classList.remove('hidden');
       // кликаем на главный пин или крестик -закрываем поппап
@@ -114,7 +114,7 @@
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
-    disableForm();
+    changeFormAccessibility();
   }
 
   /**
