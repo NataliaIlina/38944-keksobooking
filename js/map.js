@@ -2,6 +2,16 @@
 
 (function () {
   var ARROW_HEIGHT = 10;
+  var LOCATION = {
+    x: {
+      min: 100,
+      max: 1100
+    },
+    y: {
+      min: 100,
+      max: 500
+    }
+  };
   var map = document.querySelector('.map');
   var pinsWrapper = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
@@ -14,10 +24,6 @@
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
-  var minY = window.data.location.y.min;
-  var maxY = window.data.location.y.max;
-  var minX = window.data.location.x.min;
-  var maxX = window.data.location.x.max;
 
   // скрываем попап по умолчанию
   popup.classList.add('hidden');
@@ -44,7 +50,7 @@
       var initialY = moveEvt.clientY - mouseOffset.y - pinHeight / 2;
       moveEvt.preventDefault();
       var initialX = moveEvt.clientX - mouseOffset.x;
-      if (initialY > minY && initialY < maxY && initialX > minX && initialX < maxX) {
+      if (initialY > LOCATION.y.min && initialY < LOCATION.y.max && initialX > LOCATION.x.min && initialX < LOCATION.x.max) {
         // двигаем элемент следом за мышью
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';

@@ -1,6 +1,12 @@
 'use strict';
 
 (function () {
+  var TYPE = {
+    flat: 'Квартира',
+    house: 'Дом',
+    bungalo: 'Бунгало'
+  };
+
   /**
    * showCard - заполняет карточку объявления данными из объекта
    *
@@ -10,10 +16,11 @@
   window.showCard = function (ad, template) {
     var imagesList = template.querySelector('.popup__pictures');
     var featuresList = template.querySelector('.popup__features');
+
     template.querySelector('h3').textContent = ad.offer.title;
     template.querySelector('p small').textContent = ad.offer.address;
     template.querySelector('.popup__price').textContent = ad.offer.price + ' \u20bd/ночь';
-    template.querySelector('h4').textContent = window.data.type[ad.offer.type];
+    template.querySelector('h4').textContent = TYPE[ad.offer.type];
     template.querySelector('p:nth-of-type(3)').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
     template.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
     featuresList.innerHTML = '';

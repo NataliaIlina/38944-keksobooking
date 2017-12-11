@@ -1,6 +1,21 @@
 'use strict';
 
 (function () {
+  var TIMES = [
+    '12:00',
+    '13:00',
+    '14:00'
+  ];
+  var TYPES = [
+    'bungalo',
+    'flat',
+    'house',
+    'palace'
+  ];
+  var MIN_PRICES = [0, 1000, 5000, 10000];
+  var ROOMS = ['1', '2', '3', '100'];
+  var GUESTS = ['1', '2', '3', '0'];
+
   var form = document.querySelector('.notice__form');
   var formInputs = form.querySelectorAll('input');
   var timein = form.querySelector('#timein');
@@ -11,15 +26,6 @@
   var guestsNumber = form.querySelector('#capacity');
   var title = form.querySelector('#title');
   var minLength = parseInt(title.getAttribute('minlength'), 10);
-  var types = [
-    'bungalo',
-    'flat',
-    'house',
-    'palace'
-  ];
-  var minPrices = [0, 1000, 5000, 10000];
-  var rooms = ['1', '2', '3', '100'];
-  var guests = ['1', '2', '3', '0'];
   var inputError = {
     tooShort: 'Заголовок должен содержать минимум 30 символов',
     tooLong: 'Заголовок не должен содержать более 100 символов',
@@ -30,27 +36,27 @@
   };
 
   // при обновлении страницы синхронизируются поля комнаты/гости и тип/минимальная цена
-  window.synchronizeFields(roomsNumber, guestsNumber, rooms, guests, syncGuestsWithRooms);
-  window.synchronizeFields(type, price, types, minPrices, syncPriceWithType);
+  window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
+  window.synchronizeFields(type, price, TYPES, MIN_PRICES, syncPriceWithType);
 
   if (!form.classList.contains('.notice__form--disabled')) {
     // синхронизируем время заезда/выезда
     timein.addEventListener('change', function () {
-      window.synchronizeFields(timein, timeout, window.data.times, window.data.times, syncSelects);
+      window.synchronizeFields(timein, timeout, TIMES, TIMES, syncSelects);
     });
 
     timeout.addEventListener('change', function () {
-      window.synchronizeFields(timeout, timein, window.data.times, window.data.times, syncSelects);
+      window.synchronizeFields(timeout, timein, TIMES, TIMES, syncSelects);
     });
 
     // выставляем минимальную цену в зависимости от выбранного типа жилья
     type.addEventListener('change', function () {
-      window.synchronizeFields(type, price, types, minPrices, syncPriceWithType);
+      window.synchronizeFields(type, price, TYPES, MIN_PRICES, syncPriceWithType);
     });
 
     // количество гостей по количеству комнат
     roomsNumber.addEventListener('change', function () {
-      window.synchronizeFields(roomsNumber, guestsNumber, rooms, guests, syncGuestsWithRooms);
+      window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
     });
 
     // ставим сообщения для поля заголовка
