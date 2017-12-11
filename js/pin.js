@@ -9,13 +9,13 @@
   /**
    * createPin - возвращает объект, заполненный данными из массива
    *
-   * @param  {ad} ad объект с данными
-   * @param  {ad[]} arr массив объектов
+   * @param  {ad} ad
+   * @param  {number} index порядковый номер объявления
    * @return {Node} скопированный с шаблона элемент с данными
    */
-  function createPin(ad, arr) {
+  function createPin(ad, index) {
     var cloneElement = pinTemplate.cloneNode(true);
-    cloneElement.setAttribute('id', arr.indexOf(ad));
+    cloneElement.setAttribute('id', index);
     cloneElement.style.left = (ad.location['x']) + 'px';
     cloneElement.style.top = (ad.location['y'] + parseInt(pinHeight, 10)) + 'px';
     cloneElement.querySelector('img').setAttribute('src', ad.author.avatar);
@@ -29,8 +29,8 @@
    */
   function renderPins(ads) {
     var fragment = document.createDocumentFragment();
-    ads.forEach(function (item, index, arr) {
-      fragment.appendChild(createPin(item, arr));
+    ads.forEach(function (item, index) {
+      fragment.appendChild(createPin(item, index));
     });
     pinsWrapper.appendChild(fragment);
   }
