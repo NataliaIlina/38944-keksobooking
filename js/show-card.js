@@ -2,12 +2,13 @@
 
 (function () {
   /**
-   * fillCard - заполняет карточку объявления данными из объекта
+   * showCard - заполняет карточку объявления данными из объекта
    *
    * @param  {ad} ad объект с данными
    * @param  {Node} template заполняемый элемент
    */
   window.showCard = function (ad, template) {
+    var imagesList = template.querySelector('.popup__pictures');
     var featuresList = template.querySelector('.popup__features');
     template.querySelector('h3').textContent = ad.offer.title;
     template.querySelector('p small').textContent = ad.offer.address;
@@ -23,6 +24,17 @@
     }
     template.querySelector('p:nth-of-type(5)').textContent = ad.offer.description;
     template.querySelector('.popup__avatar').setAttribute('src', ad.author.avatar);
+    imagesList.innerHTML = '';
+    if (ad.offer.photos.length > 0) {
+      for (var j = 0; j < ad.offer.photos.length; j++) {
+        var listItem = document.createElement('li');
+        var image = document.createElement('img');
+        image.setAttribute('src', ad.offer.photos[j]);
+        image.style = 'width: 40px; height: 40px; margin-right: 5px';
+        listItem.appendChild(image);
+        imagesList.appendChild(listItem);
+      }
+    }
   };
 })();
 
