@@ -68,7 +68,7 @@
       } else if (!price.validity.valid) {
         setErrorStyle(price);
       } else {
-        form.submit();
+        window.backend.save(new FormData(form), window.util.renderSuccessPopup, window.util.renderErrorPopup);
       }
     });
   }
