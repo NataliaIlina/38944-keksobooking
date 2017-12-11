@@ -49,6 +49,22 @@
      */
     roundUpNumber: function (number, roundBy) {
       return (Math.round(number / roundBy)) * roundBy;
+    },
+
+    /**
+     * renderErrorPopup - отрисовывает попап с сообщением об ошибке
+     *
+     * @param {string} message
+     */
+    renderErrorPopup: function (message) {
+      var errorPopup = document.createElement('div');
+      errorPopup.textContent = message;
+      errorPopup.style = 'padding: 30px 40px; color: white; font-size: 25px; text-align: center; background-color: #ff5635; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100';
+      document.body.insertAdjacentElement('afterbegin', errorPopup);
+
+      document.addEventListener('click', function () {
+        errorPopup.remove();
+      });
     }
   };
 })();
