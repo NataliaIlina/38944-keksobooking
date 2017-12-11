@@ -12,8 +12,9 @@
    * @param  {ad} ad объект с данными
    * @return {Node} скопированный с шаблона элемент с данными
    */
-  function createPin(ad) {
+  function createPin(ad, arr) {
     var cloneElement = pinTemplate.cloneNode(true);
+    cloneElement.setAttribute('id', arr.indexOf(ad));
     cloneElement.style.left = (ad.location['x']) + 'px';
     cloneElement.style.top = (ad.location['y'] + parseInt(pinHeight, 10)) + 'px';
     cloneElement.querySelector('img').setAttribute('src', ad.author.avatar);
@@ -27,8 +28,8 @@
    */
   function renderPins(ads) {
     var fragment = document.createDocumentFragment();
-    ads.forEach(function (item) {
-      fragment.appendChild(createPin(item));
+    ads.forEach(function (item, index, arr) {
+      fragment.appendChild(createPin(item, arr));
     });
     pinsWrapper.appendChild(fragment);
   }

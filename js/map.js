@@ -75,50 +75,46 @@
   }
 
   /**
+   * renderMap - при успешной загрузке данных с сервера заполняет данными пины и попапы на карте
+   *
+   * @param {Array} ads массив объявлений
+   */
+  function renderMap(ads) {
+    window.pin.render(ads);
+    map.addEventListener('click', function (evt) {
+      var pin = evt.target.closest('.map__pin');
+      if (pin) {
+        if (currentPin) {
+          currentPin.classList.remove('map__pin--active');
+        }
+        currentPin = pin;
+        currentPin.classList.add('map__pin--active');
+      }
+      // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
+      var index = currentPin.getAttribute('id');
+      window.card.fill(ads[index], popup);
+      // показываем попап, задаем обработчики на события попапа
+      popup.classList.remove('hidden');
+      // кликаем на главный пин или крестик -закрываем поппап
+      if (currentPin === mainPin || event.target === popupClose) {
+        closePopup();
+      }
+      // закрываем попап по esc
+      document.addEventListener('keydown', onPopupEscPress);
+    });
+  }
+
+  /**
    * showMap - показывает карту с указателями
    *
    */
   function showMap() {
     // показываем пины
-    window.backend.load(window.pin.render);
+    window.backend.load(renderMap);
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     disableForm();
-    map.addEventListener('click', onMapClick);
-  }
-
-  /**
-   * onPinClick - обработчик события клика мыши на указателях
-   *
-   * @param  {Event} evt
-   */
-  function onMapClick(evt) {
-    // если уже есть активный пин -удаляем у него класс активности
-    // если клик попал на потомков пина, помещаем его в переменную и добавляем класс
-    var pin = evt.target.closest('.map__pin');
-    if (pin) {
-      if (currentPin) {
-        currentPin.classList.remove('map__pin--active');
-      }
-      currentPin = pin;
-      currentPin.classList.add('map__pin--active');
-    }
-    // по атрибуту src в картинке находим нужный нам объект объявления и заполняем попап
-    var src = currentPin.children[0].getAttribute('src');
-    window.data.ads.forEach(function (item) {
-      if (item.author.avatar === src.toString()) {
-        window.card.fill(item, popup);
-      }
-    });
-    // показываем попап, задаем обработчики на события попапа
-    popup.classList.remove('hidden');
-    // кликаем на главный пин или крестик -закрываем поппап
-    if (currentPin === mainPin || event.target === popupClose) {
-      closePopup();
-    }
-    // закрываем попап по esc
-    document.addEventListener('keydown', onPopupEscPress);
   }
 
   /**
