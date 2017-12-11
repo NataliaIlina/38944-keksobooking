@@ -21,14 +21,15 @@
 
   // скрываем попап по умолчанию
   popup.classList.add('hidden');
-
   // дизейблим филдсеты
   changeFormAccessibility();
-  // события на главном указателе
-  // drag'n'drop
+  // события на главном указателе (показываем карту)
+  mainPin.addEventListener('mousedown', onMainPinClick);
+  mainPin.addEventListener('keydown', onMainPinEnterPress);
+
+  // события на главном указателе (drag'n'drop)
   mainPinHandle.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
-    showMap();
     // считаем сдвиг мышки относительно краев передвигаемого эл-та
     var mouseOffset = {
       x: evt.clientX - mainPin.offsetLeft,
@@ -59,31 +60,40 @@
     }
   });
 
-  mainPin.addEventListener('keydown', function (evt) {
-    window.handlers.isEnterPressed(evt, showMap);
-  });
-
   // -----------------функции----------------------------
   /**
-   * changeFormAccessibility - переключает блокировку всех полей формы на обратную
+   * onMainPinClick - обработчик кликов на главном указателе
    *
+   * @param {Event} evt
    */
-  function changeFormAccessibility() {
-    for (var i = 0; i < formFieldsets.length; i++) {
-      formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
-    }
+  function onMainPinClick(evt) {
+    evt.preventDefault();
+    showMap();
   }
 
   /**
-   * renderErrorPopup - отрисовывает попап с сообщением об ошибке
+   * onMainPinEnterPress - обработчик нажатия клавиш на главном указателе
    *
-   * @param {string} message
+   * @param {Event} evt
    */
-  function renderErrorPopup(message) {
-    var errorPopup = document.createElement('div');
-    errorPopup.textContent = message;
-    errorPopup.style = 'padding: 30px 40px; color: white; font-size: 25px; text-align: center; background-color: #ff5635; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100';
-    document.body.insertAdjacentElement('afterbegin', errorPopup);
+  function onMainPinEnterPress(evt) {
+    window.handlers.isEnterPressed(evt, showMap);
+  }
+
+  /**
+   * showMap - показывает карту с указателями
+   *
+   */
+  function showMap() {
+    // удаляем обработчики с главного пина во избежании повторных срабатываний
+    mainPin.removeEventListener('mousedown', onMainPinClick);
+    mainPin.removeEventListener('keydown', onMainPinEnterPress);
+    // показываем пины и отслеживаем клики по карте
+    window.backend.load(renderMap, window.util.renderErrorPopup);
+    // активируем карту и разблокируем форму
+    map.classList.remove('map--faded');
+    form.classList.remove('notice__form--disabled');
+    changeFormAccessibility();
   }
 
   /**
@@ -101,10 +111,12 @@
         }
         currentPin = pin;
         currentPin.classList.add('map__pin--active');
+        if (currentPin !== mainPin) {
+          // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
+          var index = currentPin.getAttribute('id');
+          window.showCard(ads[index], popup);
+        }
       }
-      // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
-      var index = currentPin.getAttribute('id');
-      window.showCard(ads[index], popup);
       // показываем попап, задаем обработчики на события попапа
       popup.classList.remove('hidden');
       // кликаем на главный пин или крестик -закрываем поппап
@@ -117,16 +129,13 @@
   }
 
   /**
-   * showMap - показывает карту с указателями
+   * changeFormAccessibility - переключает блокировку всех полей формы на обратную
    *
    */
-  function showMap() {
-    // показываем пины
-    window.backend.load(renderMap, renderErrorPopup);
-    // активируем карту и разблокируем форму
-    map.classList.remove('map--faded');
-    form.classList.remove('notice__form--disabled');
-    changeFormAccessibility();
+  function changeFormAccessibility() {
+    for (var i = 0; i < formFieldsets.length; i++) {
+      formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
+    }
   }
 
   /**
