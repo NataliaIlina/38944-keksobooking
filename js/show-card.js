@@ -8,12 +8,17 @@
   };
 
   /**
+   * объект объявления
+   * @typedef {Object} ad
+   */
+
+  /**
    * showCard - заполняет карточку объявления данными из объекта
    *
    * @param  {ad} ad объект с данными
    * @param  {Node} template заполняемый элемент
    */
-  window.showCard = function (ad, template) {
+  function showCard(ad, template) {
     var imagesList = template.querySelector('.popup__pictures');
     var featuresList = template.querySelector('.popup__features');
 
@@ -42,6 +47,8 @@
         imagesList.appendChild(listItem);
       }
     }
-  };
+  }
+
+  window.showCard = showCard;
 })();
 
