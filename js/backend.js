@@ -1,8 +1,15 @@
 'use strict';
 
 (function () {
-  var URL = 'https://1510.dump.academy/keksobooking';
+  var SERVER_URL = 'https://1510.dump.academy/keksobooking';
 
+  /**
+   * setup - возвращает новый объект XMLHttpRequest и передает в обработчики параметры ответа сервера
+   *
+   * @param {function} onLoad обработчик успешного ответа
+   * @param {function} onError обработчик ошибок сервера
+   * @return {Object} xhr
+   */
   function setup(onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
@@ -25,17 +32,34 @@
     return xhr;
   }
 
+  /**
+   * load - функция загрузки данных с сервера
+   *
+   * @param {function} onLoad
+   * @param {function} onError
+   */
+  function load(onLoad, onError) {
+    var xhr = setup(onLoad, onError);
+    xhr.open('GET', SERVER_URL + '/data');
+    xhr.send();
+  }
+
+  /**
+   * save - функция передачи данных на сервер
+   *
+   * @param {Object} data передаваемые данные
+   * @param {function} onLoad
+   * @param {function} onError
+   */
+  function save(data, onLoad, onError) {
+    var xhr = setup(onLoad, onError);
+    xhr.open('POST', SERVER_URL);
+    xhr.send(data);
+  }
+
 
   window.backend = {
-    load: function (onLoad, onError) {
-      var xhr = setup(onLoad, onError);
-      xhr.open('GET', URL + '/data');
-      xhr.send();
-    },
-    save: function (data, onLoad, onError) {
-      var xhr = setup(onLoad, onError);
-      xhr.open('POST', URL);
-      xhr.send(data);
-    }
+    load: load,
+    save: save
   };
 })();
