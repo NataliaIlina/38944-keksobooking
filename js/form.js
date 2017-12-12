@@ -74,11 +74,13 @@
       } else if (!price.validity.valid) {
         setErrorStyle(price);
       } else {
-        window.backend.save(new FormData(form), window.util.renderSuccessPopup, window.util.renderErrorPopup);
+        window.backend.save(new FormData(form), renderSuccessPopup, window.util.renderErrorPopup);
       }
     });
   }
 
+
+  // ---------------- функции ----------------
   /**
    * syncSelects - задает полю указанное значение value
    *
@@ -189,5 +191,14 @@
     }
 
     price.setCustomValidity(error);
+  }
+
+  /**
+   * renderSuccessPopup - отрисовывает попап с сообщением об успешной отправке данных
+   *
+   */
+  function renderSuccessPopup() {
+    window.util.createPopup('Данные успешно отправлены', '#1cb34d');
+    form.reset();
   }
 })();

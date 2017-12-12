@@ -34,22 +34,17 @@
     }
   }
 
-  window.util = {
-    /**
-     * renderErrorPopup - отрисовывает попап с сообщением об ошибке
-     *
-     * @param {string} message
-     */
-    renderErrorPopup: function (message) {
-      createPopup(message, '#ff5635');
-    },
+  /**
+   * renderErrorPopup - отрисовывает попап с сообщением об ошибке
+   *
+   * @param {string} message
+   */
+  function renderErrorPopup(message) {
+    createPopup(message, '#ff5635');
+  }
 
-    /**
-     * renderSuccessPopup - отрисовывает попап с сообщением об успешной отправке данных
-     *
-     */
-    renderSuccessPopup: function () {
-      createPopup('Данные успешно отправлены', '#1cb34d');
-    }
+  window.util = {
+    renderErrorPopup: renderErrorPopup,
+    createPopup: createPopup
   };
 })();
