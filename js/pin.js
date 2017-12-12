@@ -25,7 +25,7 @@
   /**
    * renderPins - отрисовывает пины на основе данных из массива
    *
-   * @param {Ad[]} ads массив объявлений
+   * @param {ad[]} ads массив объявлений
    */
   function renderPins(ads) {
     var fragment = document.createDocumentFragment();
