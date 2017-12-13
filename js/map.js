@@ -37,6 +37,11 @@
   // события на главном указателе (drag'n'drop)
   mainPinHandle.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
+    if (currentPin) {
+      currentPin.classList.remove('map__pin--active');
+    }
+    mainPin.classList.add('map__pin--active');
+    currentPin = mainPin;
     // считаем сдвиг мышки относительно краев передвигаемого эл-та
     var mouseOffset = {
       x: evt.clientX - mainPin.offsetLeft,
@@ -106,45 +111,30 @@
   /**
    * renderMap - при успешной загрузке данных с сервера заполняет данными пины и попапы на карте
    *
-   * @param {ad[]} ads
+   * @param {Array} data
    */
   function renderMap(data) {
     window.ads = data;
     window.pin.render(window.ads);
-    // map.addEventListener('click', function (evt) {
-    //   var pin = evt.target.closest('.map__pin');
-    //   if (pin) {
-    //     if (currentPin) {
-    //       currentPin.classList.remove('map__pin--active');
-    //     }
-    //     currentPin = pin;
-    //     currentPin.classList.add('map__pin--active');
-    //     if (currentPin !== mainPin) {
-    //       // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
-    //       var index = currentPin.getAttribute('id');
-    //       window.showCard(window.ads[index], popup);
-    //     }
-    //   }
-    //   // показываем попап, задаем обработчики на события попапа
-    //   popup.classList.remove('hidden');
-    //   // кликаем на главный пин или крестик -закрываем поппап
-    //   if (currentPin === mainPin || event.target === popupClose) {
-    //     closePopup();
-    //   }
-    //   // закрываем попап по esc
-    //   document.addEventListener('keydown', onPopupEscPress);
-    // });
   }
 
+  /**
+   *showPopup - показывает попан и назначает стили текущему пину
+   *
+   * @param {Event} evt
+   * @param {number} index индекс объявления в массиве для привязки попапа к пину
+   * @param {ad[]} arr
+   */
   function showPopup(evt, index, arr) {
     var pin = evt.target.closest('.map__pin');
     if (currentPin) {
       currentPin.classList.remove('map__pin--active');
     }
     currentPin = pin;
-    currentPin.classList.add('map__pin--active');
+    pin.classList.add('map__pin--active');
     window.showCard(arr[index], popup);
     popup.classList.remove('hidden');
+    popupClose.addEventListener('click', onPopupCloseClick);
   }
 
   window.showPopup = showPopup;
@@ -169,6 +159,15 @@
     }
     popup.classList.add('hidden');
     document.removeEventListener('keydown', onPopupEscPress);
+    popup.removeEventListener('click', onPopupCloseClick);
+  }
+
+  /**
+   * onPopupCloseClick - обработчик события клика мыши на крестике попапа
+   *
+   */
+  function onPopupCloseClick() {
+    closePopup();
   }
 
   /**

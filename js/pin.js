@@ -5,6 +5,7 @@
   var pinTemplateImage = pinTemplate.querySelector('img');
   var pinHeight = pinTemplateImage.getAttribute('height');
   var pinsWrapper = document.querySelector('.map__pins');
+  var popup = document.querySelector('.popup');
 
   var filters = document.querySelector('.map__filters');
   var typeFilter = filters.querySelector('#housing-type');
@@ -30,6 +31,7 @@
     var pins = pinsWrapper.querySelectorAll('.map__pin:not(.map__pin--main)');
     Array.from(pins).forEach(function (pin) {
       pin.remove();
+      popup.classList.add('hidden');
     });
 
     var newArr = window.ads;
@@ -86,7 +88,6 @@
    */
   function createPin(ad, index, ads) {
     var cloneElement = pinTemplate.cloneNode(true);
-    cloneElement.setAttribute('id', index);
     cloneElement.style.left = (ad.location['x']) + 'px';
     cloneElement.style.top = (ad.location['y'] + parseInt(pinHeight, 10)) + 'px';
     cloneElement.querySelector('img').setAttribute('src', ad.author.avatar);
@@ -108,6 +109,7 @@
     });
     pinsWrapper.appendChild(fragment);
   }
+
 
   window.pin = {
     render: renderPins,
