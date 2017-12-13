@@ -24,6 +24,7 @@
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
+  window.ads = [];
 
   // скрываем попап по умолчанию
   popup.classList.add('hidden');
@@ -107,32 +108,46 @@
    *
    * @param {ad[]} ads
    */
-  function renderMap(ads) {
-    window.pin.render(ads);
-    map.addEventListener('click', function (evt) {
-      var pin = evt.target.closest('.map__pin');
-      if (pin) {
-        if (currentPin) {
-          currentPin.classList.remove('map__pin--active');
-        }
-        currentPin = pin;
-        currentPin.classList.add('map__pin--active');
-        if (currentPin !== mainPin) {
-          // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
-          var index = currentPin.getAttribute('id');
-          window.showCard(ads[index], popup);
-        }
-      }
-      // показываем попап, задаем обработчики на события попапа
-      popup.classList.remove('hidden');
-      // кликаем на главный пин или крестик -закрываем поппап
-      if (currentPin === mainPin || event.target === popupClose) {
-        closePopup();
-      }
-      // закрываем попап по esc
-      document.addEventListener('keydown', onPopupEscPress);
-    });
+  function renderMap(data) {
+    window.ads = data;
+    window.pin.render(window.ads);
+    // map.addEventListener('click', function (evt) {
+    //   var pin = evt.target.closest('.map__pin');
+    //   if (pin) {
+    //     if (currentPin) {
+    //       currentPin.classList.remove('map__pin--active');
+    //     }
+    //     currentPin = pin;
+    //     currentPin.classList.add('map__pin--active');
+    //     if (currentPin !== mainPin) {
+    //       // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
+    //       var index = currentPin.getAttribute('id');
+    //       window.showCard(window.ads[index], popup);
+    //     }
+    //   }
+    //   // показываем попап, задаем обработчики на события попапа
+    //   popup.classList.remove('hidden');
+    //   // кликаем на главный пин или крестик -закрываем поппап
+    //   if (currentPin === mainPin || event.target === popupClose) {
+    //     closePopup();
+    //   }
+    //   // закрываем попап по esc
+    //   document.addEventListener('keydown', onPopupEscPress);
+    // });
   }
+
+  function showPopup(evt, index, arr) {
+    var pin = evt.target.closest('.map__pin');
+    if (currentPin) {
+      currentPin.classList.remove('map__pin--active');
+    }
+    currentPin = pin;
+    currentPin.classList.add('map__pin--active');
+    window.showCard(arr[index], popup);
+    popup.classList.remove('hidden');
+  }
+
+  window.showPopup = showPopup;
 
   /**
    * changeFormAccessibility - переключает блокировку всех полей формы на обратную
