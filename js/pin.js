@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var INTERVAL = 500;
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinTemplateImage = pinTemplate.querySelector('img');
   var pinHeight = pinTemplateImage.getAttribute('height');
@@ -16,6 +17,7 @@
 
   var dataAds = [];
   var pins = [];
+  var currentTimeout;
 
   // блок с фильтрами - рендерим подходящие пины при изменении настроек
   filters.addEventListener('change', function () {
@@ -26,7 +28,14 @@
     var features = Array.from(featuresFilter.querySelectorAll('input[type=checkbox]:checked')).map(function (item) {
       return item.value;
     });
-    updatePins(type, guests, rooms, price, features);
+
+    if (currentTimeout) {
+      clearTimeout(currentTimeout);
+    }
+    currentTimeout = setTimeout(function () {
+      updatePins(type, guests, rooms, price, features);
+    }, INTERVAL);
+
   });
 
   /**
@@ -138,7 +147,6 @@
     dataAds = data;
     renderPins(dataAds);
   }
-
 
   window.pin = {
     renderMap: renderMap
