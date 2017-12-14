@@ -7,6 +7,11 @@
     bungalo: 'Бунгало'
   };
 
+  var map = document.querySelector('.map');
+  var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
+  // добавляем карточку объявления на карту
+  map.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', cardTemplate.cloneNode(true));
+
   /**
    * объект объявления
    * @typedef {Object} ad
@@ -47,6 +52,7 @@
         imagesList.appendChild(listItem);
       }
     }
+    template.classList.remove('hidden');
   }
 
   window.showCard = showCard;
