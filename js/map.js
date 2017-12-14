@@ -19,12 +19,10 @@
   var formFieldsets = form.querySelectorAll('fieldset');
   var popup = document.querySelector('.popup');
   var popupClose = popup.querySelector('.popup__close');
-  var currentPin = null;
   // переменные для drag'n'drop
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
-  window.ads = [];
 
   // скрываем попап по умолчанию
   popup.classList.add('hidden');
@@ -37,11 +35,10 @@
   // события на главном указателе (drag'n'drop)
   mainPinHandle.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
-    if (currentPin) {
-      currentPin.classList.remove('map__pin--active');
-    }
-    mainPin.classList.add('map__pin--active');
-    currentPin = mainPin;
+    // если открыт попап - закрываем
+    closePopup();
+    // активируем пин
+    activatePin(mainPin);
     // считаем сдвиг мышки относительно краев передвигаемого эл-та
     var mouseOffset = {
       x: evt.clientX - mainPin.offsetLeft,
@@ -101,21 +98,11 @@
     mainPin.removeEventListener('mousedown', onMainPinClick);
     mainPin.removeEventListener('keydown', onMainPinEnterPress);
     // показываем пины и отслеживаем клики по карте
-    window.backend.load(renderMap, window.util.renderErrorPopup);
+    window.backend.load(window.pin.renderMap, window.util.renderErrorPopup);
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
     changeFormAccessibility();
-  }
-
-  /**
-   * renderMap - при успешной загрузке данных с сервера заполняет данными пины и попапы на карте
-   *
-   * @param {Array} data
-   */
-  function renderMap(data) {
-    window.ads = data;
-    window.pin.render(window.ads);
   }
 
   /**
@@ -127,25 +114,24 @@
    */
   function showPopup(evt, index, arr) {
     var pin = evt.target.closest('.map__pin');
-    if (currentPin) {
-      currentPin.classList.remove('map__pin--active');
-    }
-    currentPin = pin;
-    pin.classList.add('map__pin--active');
+    activatePin(pin);
     window.showCard(arr[index], popup);
-    popup.classList.remove('hidden');
+    document.addEventListener('keydown', onPopupEscPress);
     popupClose.addEventListener('click', onPopupCloseClick);
   }
 
-  window.showPopup = showPopup;
-
   /**
-   * changeFormAccessibility - переключает блокировку всех полей формы на обратную
+   * activatePin - удаляет класс активности у текущего пина и добавляет его заданному пину(если указан)
    *
+   * @param {Node} [pin]
    */
-  function changeFormAccessibility() {
-    for (var i = 0; i < formFieldsets.length; i++) {
-      formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
+  function activatePin(pin) {
+    var active = map.querySelector('.map__pin--active');
+    if (active) {
+      active.classList.remove('map__pin--active');
+    }
+    if (pin) {
+      pin.classList.add('map__pin--active');
     }
   }
 
@@ -154,10 +140,10 @@
    *
    */
   function closePopup() {
-    if (currentPin !== mainPin) {
-      currentPin.classList.remove('map__pin--active');
-    }
+    // удаляем класс активности у активного пина и скрываем попап
+    activatePin();
     popup.classList.add('hidden');
+    // удаляем обработчики попапа
     document.removeEventListener('keydown', onPopupEscPress);
     popup.removeEventListener('click', onPopupCloseClick);
   }
@@ -178,4 +164,16 @@
   function onPopupEscPress(evt) {
     window.handlers.isEscPressed(evt, closePopup);
   }
+
+  /**
+ * changeFormAccessibility - переключает блокировку всех полей формы на обратную
+ *
+ */
+  function changeFormAccessibility() {
+    for (var i = 0; i < formFieldsets.length; i++) {
+      formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
+    }
+  }
+
+  window.showPopup = showPopup;
 })();

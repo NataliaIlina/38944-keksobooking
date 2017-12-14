@@ -14,7 +14,10 @@
   var guestsFilter = filters.querySelector('#housing-guests');
   var featuresFilter = filters.querySelector('#housing-features');
 
+  var dataAds = [];
+  var pins = [];
 
+  // блок с фильтрами - рендерим подходящие пины при изменении настроек
   filters.addEventListener('change', function () {
     var type = typeFilter.value;
     var price = priceFilter.value;
@@ -26,55 +29,69 @@
     updatePins(type, guests, rooms, price, features);
   });
 
-
-  function updatePins(typeValue, guestsValue, roomsValue, priceValue, featuresValues) {
-    var pins = pinsWrapper.querySelectorAll('.map__pin:not(.map__pin--main)');
-    Array.from(pins).forEach(function (pin) {
+  /**
+   * updatePins - рендерит новые пины, соответствующие значениям аргументов
+   *
+   * @param {*} type тип жилья
+   * @param {*} guests кол-во гостей
+   * @param {*} rooms кол-во комнат
+   * @param {*} price цена
+   * @param {Array} features список удобств
+   */
+  function updatePins(type, guests, rooms, price, features) {
+    // удаляем пины и скрываем попап
+    pins.forEach(function (pin) {
       pin.remove();
-      popup.classList.add('hidden');
+    });
+    popup.classList.add('hidden');
+    // массив, с которым будем работать, на старте равен dataAds
+    var newArr = dataAds;
+    // фильтруем массивы
+    newArr = newArr.filter(function (ad) {
+      return isAny(type) ? ad.offer.type : ad.offer.type === type;
+    });
+    newArr = newArr.filter(function (ad) {
+      return isAny(guests) ? ad.offer.guests : ad.offer.guests === parseInt(guests, 10);
+    });
+    newArr = newArr.filter(function (ad) {
+      return isAny(rooms) ? ad.offer.rooms : ad.offer.rooms === parseInt(rooms, 10);
     });
 
-    var newArr = window.ads;
-
-    if (typeValue !== 'any') {
-      newArr = newArr.filter(function (ad) {
-        return ad.offer.type === typeValue;
-      });
-    }
-    if (guestsValue !== 'any') {
-      newArr = newArr.filter(function (ad) {
-        return ad.offer.guests === parseInt(guestsValue, 10);
-      });
-    }
-    if (roomsValue !== 'any') {
-      newArr = newArr.filter(function (ad) {
-        return ad.offer.rooms === parseInt(roomsValue, 10);
-      });
-    }
-    if (priceValue !== 'any') {
-      if (priceValue === 'low') {
-        newArr = newArr.filter(function (ad) {
-          return ad.offer.price < 10000;
-        });
-      } else if (priceValue === 'high') {
-        newArr = newArr.filter(function (ad) {
-          return ad.offer.price > 50000;
-        });
-      } else if (priceValue === 'middle') {
-        newArr = newArr.filter(function (ad) {
-          return (ad.offer.price >= 10000 && ad.offer.price <= 50000);
-        });
+    newArr = newArr.filter(function (ad) {
+      var result;
+      switch (price) {
+        case 'low':
+          result = ad.offer.price < 10000;
+          break;
+        case 'middle':
+          result = (ad.offer.price >= 10000 && ad.offer.price <= 50000);
+          break;
+        case 'high':
+          result = ad.offer.price > 50000;
+          break;
       }
-    }
-    if (featuresValues.length > 0) {
+      return isAny(price) ? ad.offer.price : result;
+    });
+
+    if (features.length > 0) {
       newArr = newArr.filter(function (ad) {
-        return featuresValues.every(function (item) {
+        return features.every(function (item) {
           return ad.offer.features.indexOf(item) !== -1;
         });
       });
     }
 
     renderPins(newArr);
+  }
+
+  /**
+   * isAny - возвращает истинность соответствия параметра функции значению 'any'
+   *
+   * @param {*} value
+   * @return {boolean}
+   */
+  function isAny(value) {
+    return value === 'any';
   }
 
 
@@ -105,14 +122,25 @@
   function renderPins(ads) {
     var fragment = document.createDocumentFragment();
     ads.forEach(function (item, index, arr) {
-      fragment.appendChild(createPin(item, index, arr));
+      var pin = createPin(item, index, arr);
+      fragment.appendChild(pin);
+      pins.push(pin);
     });
     pinsWrapper.appendChild(fragment);
   }
 
+  /**
+   * renderMap - при успешной загрузке данных с сервера заполняет данными пины и попапы на карте
+   *
+   * @param {Array} data
+   */
+  function renderMap(data) {
+    dataAds = data;
+    renderPins(dataAds);
+  }
+
 
   window.pin = {
-    render: renderPins,
-    update: updatePins
+    renderMap: renderMap
   };
 })();
