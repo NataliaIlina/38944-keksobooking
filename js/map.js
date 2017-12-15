@@ -19,7 +19,6 @@
   var form = document.querySelector('.notice__form');
   var formFieldsets = form.querySelectorAll('fieldset');
   var popup = document.querySelector('.popup');
-  var popupClose = popup.querySelector('.popup__close');
   // переменные для drag'n'drop
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
@@ -27,8 +26,6 @@
 
   var activePin;
 
-  // скрываем попап по умолчанию
-  popup.classList.add('hidden');
   // дизейблим филдсеты
   changeFormAccessibility();
   // события на главном указателе (показываем карту)
@@ -100,7 +97,7 @@
     // удаляем обработчики с главного пина во избежании повторных срабатываний
     mainPin.removeEventListener('mousedown', onMainPinClick);
     mainPin.removeEventListener('keydown', onMainPinEnterPress);
-    // показываем пины и отслеживаем клики по карте
+    // показываем карту с пинами
     window.backend.load(window.pin.renderMap, window.util.renderErrorPopup);
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
@@ -111,16 +108,12 @@
   /**
    * showPopup - показывает попан и назначает стили текущему пину
    *
-   * @param {Event} evt
-   * @param {number} index индекс объявления в массиве для привязки попапа к пину
-   * @param {ad[]} arr
+   * @param {Node} pin пин, на котором произошел клик
+   * @param {ad} ad
    */
-  function showPopup(evt, index, arr) {
-    var pin = evt.target.closest('.map__pin');
+  function showPopup(pin, ad) {
     activatePin(pin);
-    window.showCard(arr[index], popup);
-    document.addEventListener('keydown', onPopupEscPress);
-    popupClose.addEventListener('click', onPopupCloseClick);
+    window.showCard(ad, popup, closePopup);
   }
 
   /**
@@ -146,26 +139,6 @@
     // удаляем класс активности у активного пина и скрываем попап
     activatePin();
     popup.classList.add('hidden');
-    // удаляем обработчики попапа
-    document.removeEventListener('keydown', onPopupEscPress);
-    popup.removeEventListener('click', onPopupCloseClick);
-  }
-
-  /**
-   * onPopupCloseClick - обработчик события клика мыши на крестике попапа
-   *
-   */
-  function onPopupCloseClick() {
-    closePopup();
-  }
-
-  /**
-   * onPopupEscPress - обработчик события нажатия клавиши при открытом попапе
-   *
-   * @param  {Event} evt
-   */
-  function onPopupEscPress(evt) {
-    window.handlers.isEscPressed(evt, closePopup);
   }
 
   /**

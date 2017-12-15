@@ -9,8 +9,10 @@
 
   var map = document.querySelector('.map');
   var cardTemplate = document.querySelector('template').content.querySelector('.map__card');
+  var cloneCard = cardTemplate.cloneNode(true);
   // добавляем карточку объявления на карту
-  map.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', cardTemplate.cloneNode(true));
+  map.querySelector('.map__filters-container').insertAdjacentElement('beforeBegin', cloneCard);
+  cloneCard.classList.add('hidden');
 
   /**
    * объект объявления
@@ -22,10 +24,12 @@
    *
    * @param  {ad} ad объект с данными
    * @param  {Node} template заполняемый элемент
+   * @param  {function} onCLose функция закрытия попапа
    */
-  function showCard(ad, template) {
+  function showCard(ad, template, onCLose) {
     var imagesList = template.querySelector('.popup__pictures');
     var featuresList = template.querySelector('.popup__features');
+    var closeButton = template.querySelector('.popup__close');
 
     template.querySelector('h3').textContent = ad.offer.title;
     template.querySelector('p small').textContent = ad.offer.address;
@@ -53,6 +57,32 @@
       }
     }
     template.classList.remove('hidden');
+
+    closeButton.addEventListener('click', onPopupCloseClick);
+    document.addEventListener('keydown', onPopupEscPress);
+
+    /**
+     * onPopupCloseClick - обработчик события клика мыши на крестике попапа
+     *
+     */
+    function onPopupCloseClick() {
+      onCLose();
+      // удаляем обработчики попапа
+      closeButton.removeEventListener('click', onPopupCloseClick);
+      document.removeEventListener('keydown', onPopupEscPress);
+    }
+
+    /**
+     * onPopupEscPress - обработчик события нажатия клавиши при открытом попапе
+     *
+     * @param  {Event} evt
+     */
+    function onPopupEscPress(evt) {
+      window.handlers.isEscPressed(evt, onCLose);
+      // удаляем обработчики попапа
+      closeButton.removeEventListener('click', onPopupCloseClick);
+      document.removeEventListener('keydown', onPopupEscPress);
+    }
   }
 
   window.showCard = showCard;
