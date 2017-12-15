@@ -2,6 +2,8 @@
 
 (function () {
   var SERVER_URL = 'https://1510.dump.academy/keksobooking';
+  var STATUS_OK = 200;
+  var TIMEOUT = 5000;
 
   /**
    * setup - возвращает новый объект XMLHttpRequest и передает в обработчики параметры ответа сервера
@@ -15,7 +17,7 @@
     xhr.responseType = 'json';
 
     xhr.addEventListener('load', function () {
-      if (xhr.status === 200) {
+      if (xhr.status === STATUS_OK) {
         onLoad(xhr.response);
       } else {
         onError('Произошла ошибка. Неизвестный статус: ' + xhr.status + ' ' + xhr.statusText);
@@ -25,10 +27,10 @@
       onError('Произошла ошибка соединения');
     });
     xhr.addEventListener('timeout', function () {
-      onError('Запрос не успел выполниться за ' + xhr.timeout / 1000 + 'с');
+      onError('Запрос не успел выполниться за ' + xhr.timeout + 'мс');
     });
 
-    xhr.timeout = 5000;
+    xhr.timeout = TIMEOUT;
     return xhr;
   }
 
