@@ -1,6 +1,21 @@
 'use strict';
 
 (function () {
+  var INTERVAL = 500;
+  var currentTimeout;
+
+  /**
+   * debounce - устанавливает setTimeout для заданной функции, устраняя слишком частые ее вызовы
+   *
+   * @param {function} func
+   */
+  function debounce(func) {
+    if (currentTimeout) {
+      window.clearTimeout(currentTimeout);
+    }
+    currentTimeout = window.setTimeout(func, INTERVAL);
+  }
+
   /**
    * createPopup - создает попап, задает стили и заполняет данными
    *
@@ -44,6 +59,7 @@
   }
 
   window.util = {
+    debounce: debounce,
     renderErrorPopup: renderErrorPopup,
     createPopup: createPopup
   };

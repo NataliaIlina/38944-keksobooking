@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var INTERVAL = 500;
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -19,25 +18,10 @@
 
   var dataAds = [];
   var pins = [];
-  var currentTimeout;
 
   // блок с фильтрами - рендерим подходящие пины при изменении настроек
   filters.addEventListener('change', function () {
-    var type = typeFilter.value;
-    var price = priceFilter.value;
-    var rooms = roomsFilter.value;
-    var guests = guestsFilter.value;
-    var features = Array.from(featuresFilter.querySelectorAll('input[type=checkbox]:checked')).map(function (item) {
-      return item.value;
-    });
-
-    if (currentTimeout) {
-      clearTimeout(currentTimeout);
-    }
-    currentTimeout = setTimeout(function () {
-      updatePins(type, guests, rooms, price, features);
-    }, INTERVAL);
-
+    window.util.debounce(updatePins);
   });
 
   /**
@@ -49,7 +33,15 @@
    * @param {*} price цена
    * @param {Array} features список удобств
    */
-  function updatePins(type, guests, rooms, price, features) {
+  function updatePins() {
+    // получаем значения из формы
+    var type = typeFilter.value;
+    var price = priceFilter.value;
+    var rooms = roomsFilter.value;
+    var guests = guestsFilter.value;
+    var features = Array.from(featuresFilter.querySelectorAll('input[type=checkbox]:checked')).map(function (item) {
+      return item.value;
+    });
     // удаляем пины и скрываем попап
     pins.forEach(function (pin) {
       pin.remove();
