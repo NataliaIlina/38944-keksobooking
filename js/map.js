@@ -23,6 +23,8 @@
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
+  var valueX;
+  var valueY;
 
   var activePin;
 
@@ -58,7 +60,9 @@
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
-        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
+        valueX = parseInt(mainPin.style.left, 10);
+        valueY = parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT;
+        setAddress();
       }
     }
 
@@ -70,6 +74,14 @@
   });
 
   // -----------------функции----------------------------
+  /**
+   * setAddress - заносит значения координат главного пина в поле адреса
+   *
+   */
+  function setAddress() {
+    formAddress.value = 'x: ' + valueX + ', y: ' + valueY;
+  }
+
   /**
    * onMainPinClick - обработчик кликов на главном указателе
    *
@@ -151,5 +163,8 @@
     }
   }
 
-  window.showPopup = showPopup;
+  window.map = {
+    setAddress: setAddress,
+    showPopup: showPopup
+  };
 })();

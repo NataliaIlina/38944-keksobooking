@@ -111,7 +111,7 @@
     cloneElement.querySelector('img').setAttribute('src', ad.author.avatar);
     cloneElement.addEventListener('click', function (evt) {
       var pin = evt.target.closest('.map__pin');
-      window.showPopup(pin, ad);
+      window.map.showPopup(pin, ad);
     });
     return cloneElement;
   }

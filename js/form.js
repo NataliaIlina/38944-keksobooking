@@ -200,5 +200,9 @@
   function renderSuccessPopup() {
     window.util.createPopup('Данные успешно отправлены', '#1cb34d');
     form.reset();
+    // после сброса формы выполняем синхронизацию и заполняем поле адреса
+    window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
+    window.synchronizeFields(type, price, TYPES, MIN_PRICES, syncPriceWithType);
+    window.map.setAddress();
   }
 })();
