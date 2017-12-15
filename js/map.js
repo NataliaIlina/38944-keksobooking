@@ -12,6 +12,7 @@
       max: 500
     }
   };
+  var PIN_ACTIVE_CLASS = 'map__pin--active';
   var map = document.querySelector('.map');
   var pinsWrapper = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
@@ -23,6 +24,8 @@
   var mainPinHandle = map.querySelector('.map__pin--main img');
   var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
+
+  var activePin;
 
   // скрываем попап по умолчанию
   popup.classList.add('hidden');
@@ -106,7 +109,7 @@
   }
 
   /**
-   *showPopup - показывает попан и назначает стили текущему пину
+   * showPopup - показывает попан и назначает стили текущему пину
    *
    * @param {Event} evt
    * @param {number} index индекс объявления в массиве для привязки попапа к пину
@@ -126,12 +129,12 @@
    * @param {Node} [pin]
    */
   function activatePin(pin) {
-    var active = map.querySelector('.map__pin--active');
-    if (active) {
-      active.classList.remove('map__pin--active');
+    if (activePin) {
+      activePin.classList.remove(PIN_ACTIVE_CLASS);
     }
     if (pin) {
-      pin.classList.add('map__pin--active');
+      pin.classList.add(PIN_ACTIVE_CLASS);
+      activePin = pin;
     }
   }
 
