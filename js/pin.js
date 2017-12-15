@@ -2,6 +2,8 @@
 
 (function () {
   var INTERVAL = 500;
+  var LOW_PRICE = 10000;
+  var HIGH_PRICE = 50000;
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinTemplateImage = pinTemplate.querySelector('img');
   var pinHeight = pinTemplateImage.getAttribute('height');
@@ -54,49 +56,49 @@
     });
     popup.classList.add('hidden');
     // массив, с которым будем работать, на старте равен dataAds
-    var newArr = dataAds;
+    var currentAds = dataAds;
     // фильтруем массивы
-    newArr = newArr.filter(function (ad) {
+    currentAds = currentAds.filter(function (ad) {
       return isAny(type) ? ad.offer.type : ad.offer.type === type;
     });
-    newArr = newArr.filter(function (ad) {
+    currentAds = currentAds.filter(function (ad) {
       return isAny(guests) ? ad.offer.guests : ad.offer.guests === parseInt(guests, 10);
     });
-    newArr = newArr.filter(function (ad) {
+    currentAds = currentAds.filter(function (ad) {
       return isAny(rooms) ? ad.offer.rooms : ad.offer.rooms === parseInt(rooms, 10);
     });
 
-    newArr = newArr.filter(function (ad) {
+    currentAds = currentAds.filter(function (ad) {
       var result;
       switch (price) {
         case 'low':
-          result = ad.offer.price < 10000;
+          result = ad.offer.price < LOW_PRICE;
           break;
         case 'middle':
-          result = (ad.offer.price >= 10000 && ad.offer.price <= 50000);
+          result = (ad.offer.price >= LOW_PRICE && ad.offer.price <= HIGH_PRICE);
           break;
         case 'high':
-          result = ad.offer.price > 50000;
+          result = ad.offer.price > HIGH_PRICE;
           break;
       }
       return isAny(price) ? ad.offer.price : result;
     });
 
     if (features.length > 0) {
-      newArr = newArr.filter(function (ad) {
+      currentAds = currentAds.filter(function (ad) {
         return features.every(function (item) {
           return ad.offer.features.indexOf(item) !== -1;
         });
       });
     }
 
-    renderPins(newArr);
+    renderPins(currentAds);
   }
 
   /**
    * isAny - возвращает истинность соответствия параметра функции значению 'any'
    *
-   * @param {*} value
+   * @param {string} value
    * @return {boolean}
    */
   function isAny(value) {
