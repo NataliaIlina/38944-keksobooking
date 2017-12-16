@@ -34,6 +34,18 @@
     highPrice: 'Указанная цена не может быть больше ' + price.max,
     style: '2px solid red'
   };
+  // переменные для drag'n'drop upload
+  var avatarInput = form.querySelector('#avatar');
+  var photoInput = form.querySelector('#images');
+  var dropZoneAvatar = form.querySelector('.drop-zone');
+  var dropZonePhoto = form.querySelector('.drop-zone:nth-child(2)');
+  var avatarPreview = form.querySelector('.notice__preview img');
+  var container = form.querySelector('.form__photo-container');
+  // задаем контейнеру стили для отображения загруженных фото
+  container.style.width = 'auto';
+  container.style.display = 'flex';
+  container.style.flexWrap = 'wrap';
+  container.querySelector('.upload').style.width = '140px';
 
   // при обновлении страницы синхронизируются поля комнаты/гости и тип/минимальная цена
   window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
@@ -78,6 +90,23 @@
       }
     });
   }
+
+  window.makeDroppable(dropZoneAvatar, avatarInput, function (files) {
+    for (var i = 0; i < files.length; i++) {
+      avatarPreview.setAttribute('src', URL.createObjectURL(files[i]));
+    }
+  });
+
+  window.makeDroppable(dropZonePhoto, photoInput, function (files) {
+    for (var i = 0; i < files.length; i++) {
+      var image = document.createElement('img');
+      image.style.width = '60px';
+      image.style.height = '60px';
+      image.style.margin = '5px';
+      image.setAttribute('src', URL.createObjectURL(files[i]));
+      container.appendChild(image);
+    }
+  });
 
 
   // ---------------- функции ----------------
