@@ -123,7 +123,8 @@
    */
   function renderPins(ads) {
     var fragment = document.createDocumentFragment();
-    ads.forEach(function (item) {
+    var shortAds = ads.slice(0, 5);
+    shortAds.forEach(function (item) {
       var pin = createPin(item);
       fragment.appendChild(pin);
       pins.push(pin);
