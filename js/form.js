@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var DEFAULT_SRC = 'img/muffin.png';
   var TIMES = [
     '12:00',
     '13:00',
@@ -41,6 +42,7 @@
   var dropZonePhoto = form.querySelector('.drop-zone:nth-child(2)');
   var avatarPreview = form.querySelector('.notice__preview img');
   var container = form.querySelector('.form__photo-container');
+  var formImages = [];
   // задаем контейнеру стили для отображения загруженных фото
   container.style.width = 'auto';
   container.style.display = 'flex';
@@ -105,6 +107,7 @@
       image.style.margin = '5px';
       image.setAttribute('src', URL.createObjectURL(files[i]));
       container.appendChild(image);
+      formImages.push(image);
     }
   });
 
@@ -233,5 +236,10 @@
     window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
     window.synchronizeFields(type, price, TYPES, MIN_PRICES, syncPriceWithType);
     window.map.setAddress();
+    // картинки возвращаем в исходное состояние
+    avatarPreview.setAttribute('src', DEFAULT_SRC);
+    formImages.forEach(function (item) {
+      item.remove();
+    });
   }
 })();
