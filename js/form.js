@@ -25,6 +25,7 @@
   var price = form.querySelector('#price');
   var roomsNumber = form.querySelector('#room_number');
   var guestsNumber = form.querySelector('#capacity');
+  var formAddress = form.querySelector('#address');
   var title = form.querySelector('#title');
   var minLength = parseInt(title.getAttribute('minlength'), 10);
   var inputError = {
@@ -235,11 +236,25 @@
     // после сброса формы выполняем синхронизацию и заполняем поле адреса
     window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
     window.synchronizeFields(type, price, TYPES, MIN_PRICES, syncPriceWithType);
-    window.map.setAddress();
     // картинки возвращаем в исходное состояние
     avatarPreview.setAttribute('src', DEFAULT_SRC);
     formImages.forEach(function (item) {
       item.remove();
     });
   }
+
+
+  /**
+   * setAddress - заносит значения координат главного пина в поле адреса
+   *
+   * @param {number} coordX
+   * @param {number} coordY
+   */
+  function setAddress(coordX, coordY) {
+    formAddress.setAttribute('value', 'x: ' + coordX + ', y: ' + coordY);
+  }
+
+  window.form = {
+    setAddress: setAddress
+  };
 })();

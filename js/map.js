@@ -21,7 +21,6 @@
   var popup = document.querySelector('.popup');
   // переменные для drag'n'drop
   var mainPinHandle = map.querySelector('.map__pin--main img');
-  var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
   var valueX;
   var valueY;
@@ -62,7 +61,7 @@
         // сразу передаем значения в поле адреса
         valueX = parseInt(mainPin.style.left, 10);
         valueY = parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT;
-        setAddress();
+        window.form.setAddress(valueX, valueY);
       }
     }
 
@@ -74,13 +73,6 @@
   });
 
   // -----------------функции----------------------------
-  /**
-   * setAddress - заносит значения координат главного пина в поле адреса
-   *
-   */
-  function setAddress() {
-    formAddress.value = 'x: ' + valueX + ', y: ' + valueY;
-  }
 
   /**
    * onMainPinClick - обработчик кликов на главном указателе
@@ -164,7 +156,6 @@
   }
 
   window.map = {
-    setAddress: setAddress,
     showPopup: showPopup
   };
 })();
