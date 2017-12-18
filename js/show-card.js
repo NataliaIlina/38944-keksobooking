@@ -103,10 +103,10 @@
       }
     }
 
-    function onDragEnd(evt) {
+    function onDrop(evt) {
       evt.preventDefault();
-      list.removeEventListener('dragover', onDragOver, false);
-      list.removeEventListener('dragend', onDragEnd, false);
+      list.removeEventListener('dragover', onDragOver);
+      list.removeEventListener('dragend', onDrop);
     }
 
     list.addEventListener('dragstart', function (evt) {
@@ -114,7 +114,7 @@
       dragEl = evt.target.closest('li');
       evt.dataTransfer.effectAllowed = 'move';
       list.addEventListener('dragover', onDragOver);
-      list.addEventListener('dragend', onDragEnd);
+      list.addEventListener('drop', onDrop);
     });
   }
 

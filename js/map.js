@@ -20,7 +20,6 @@
   var formFieldsets = form.querySelectorAll('fieldset');
   var popup = document.querySelector('.popup');
   // переменные для drag'n'drop
-  var mainPinHandle = map.querySelector('.map__pin--main img');
   var pinHeight = mainPin.offsetHeight;
   var valueX;
   var valueY;
@@ -34,7 +33,7 @@
   mainPin.addEventListener('keydown', onMainPinEnterPress);
 
   // события на главном указателе (drag'n'drop)
-  mainPinHandle.addEventListener('mousedown', function (evt) {
+  mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
     // если открыт попап - закрываем
     closePopup();
@@ -50,6 +49,7 @@
     pinsWrapper.addEventListener('mouseup', onMouseUp);
 
     function onMouseMove(moveEvt) {
+      moveEvt.preventDefault();
       // дабы компенсировть слишком высокую планку в 100px, ставим координату Y в район самой верхней точки указателя
       var initialY = moveEvt.clientY - mouseOffset.y - pinHeight / 2;
       moveEvt.preventDefault();
