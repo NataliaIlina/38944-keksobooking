@@ -60,7 +60,7 @@
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
         valueX = parseInt(mainPin.style.left, 10);
-        valueY = parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT;
+        valueY = Math.round(parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
         window.setAddress(valueX, valueY);
       }
     }
