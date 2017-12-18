@@ -16,6 +16,7 @@
   var MIN_PRICES = [0, 1000, 5000, 10000];
   var ROOMS = ['1', '2', '3', '100'];
   var GUESTS = ['1', '2', '3', '0'];
+  var SUCCESS_COLOR = '#1cb34d';
 
   var form = document.querySelector('.notice__form');
   var formInputs = form.querySelectorAll('input');
@@ -95,15 +96,12 @@
   }
 
   window.makeDroppable(dropZoneAvatar, avatarInput, function (files) {
-    for (var i = 0; i < files.length; i++) {
-      avatarPreview.setAttribute('src', URL.createObjectURL(files[i]));
-    }
+    avatarPreview.setAttribute('src', URL.createObjectURL(files[0]));
   });
 
   window.makeDroppable(dropZonePhoto, photoInput, function (files) {
     for (var i = 0; i < files.length; i++) {
       var image = document.createElement('img');
-      image.style.width = '60px';
       image.style.height = '60px';
       image.style.margin = '5px';
       image.setAttribute('src', URL.createObjectURL(files[i]));
@@ -145,21 +143,22 @@
     // получаем текущее значение кол-ва гостей
     var currentValue = guestsElement.value;
 
-    for (var i = 0; i < guestsElement.options.length; i++) {
+    Array.from(guestsElement.options).forEach(function (option) {
       // дизейблим все
-      guestsElement.options[i].disabled = true;
+      option.disabled = true;
       // если текущее значение 0, оставляем доступным только его
       if (currentValue === '0') {
-        if (guestsElement.options[i].value === currentValue) {
-          guestsElement.options[i].disabled = false;
+        if (option.value === currentValue) {
+          option.disabled = false;
         }
       } else {
         // в противном случае делаем доступными все значения меньше текущего и не равные 0
-        if (guestsElement.options[i].value <= currentValue && guestsElement.options[i].value !== '0') {
-          guestsElement.options[i].disabled = false;
+        if (option.value <= currentValue && option.value !== '0') {
+          option.disabled = false;
         }
       }
-    }
+    });
+
   }
 
   /**
@@ -231,7 +230,7 @@
    *
    */
   function renderSuccessPopup() {
-    window.util.createPopup('Данные успешно отправлены', '#1cb34d');
+    window.util.createPopup('Данные успешно отправлены', SUCCESS_COLOR);
     form.reset();
     // после сброса формы выполняем синхронизацию и заполняем поле адреса
     window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
@@ -254,7 +253,5 @@
     formAddress.setAttribute('value', 'x: ' + coordX + ', y: ' + coordY);
   }
 
-  window.form = {
-    setAddress: setAddress
-  };
+  window.setAddress = setAddress;
 })();

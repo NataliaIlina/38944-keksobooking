@@ -61,7 +61,7 @@
         // сразу передаем значения в поле адреса
         valueX = parseInt(mainPin.style.left, 10);
         valueY = parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT;
-        window.form.setAddress(valueX, valueY);
+        window.setAddress(valueX, valueY);
       }
     }
 
@@ -102,7 +102,7 @@
     mainPin.removeEventListener('mousedown', onMainPinClick);
     mainPin.removeEventListener('keydown', onMainPinEnterPress);
     // показываем карту с пинами
-    window.backend.load(window.pin.renderMap, window.util.renderErrorPopup);
+    window.backend.load(window.renderMap, window.util.renderErrorPopup);
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
@@ -150,9 +150,9 @@
  *
  */
   function changeFormAccessibility() {
-    for (var i = 0; i < formFieldsets.length; i++) {
-      formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
-    }
+    Array.from(formFieldsets).forEach(function (fieldset) {
+      fieldset.disabled = fieldset.disabled ? false : true;
+    });
   }
 
   window.map = {

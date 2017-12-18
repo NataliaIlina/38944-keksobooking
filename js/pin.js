@@ -3,6 +3,7 @@
 (function () {
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
+  var MAX_PINS = 5;
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinTemplateImage = pinTemplate.querySelector('img');
   var pinHeight = pinTemplateImage.getAttribute('height');
@@ -37,11 +38,13 @@
     // получаем значения из формы
     var type = typeFilter.value;
     var price = priceFilter.value;
-    var rooms = roomsFilter.value;
-    var guests = guestsFilter.value;
+    var roomsNumber = roomsFilter.value;
+    var guestsNumber = guestsFilter.value;
+    // создаем массив из значений отмеченных чекбоксов
     var features = Array.from(featuresFilter.querySelectorAll('input[type=checkbox]:checked')).map(function (item) {
       return item.value;
     });
+
     // удаляем пины и скрываем попап
     pins.forEach(function (pin) {
       pin.remove();
@@ -54,10 +57,10 @@
       return isAny(type) ? ad.offer.type : ad.offer.type === type;
     });
     currentAds = currentAds.filter(function (ad) {
-      return isAny(guests) ? ad.offer.guests : ad.offer.guests === parseInt(guests, 10);
+      return isAny(guestsNumber) ? ad.offer.guests : ad.offer.guests === parseInt(guestsNumber, 10);
     });
     currentAds = currentAds.filter(function (ad) {
-      return isAny(rooms) ? ad.offer.rooms : ad.offer.rooms === parseInt(rooms, 10);
+      return isAny(roomsNumber) ? ad.offer.rooms : ad.offer.rooms === parseInt(roomsNumber, 10);
     });
 
     currentAds = currentAds.filter(function (ad) {
@@ -109,6 +112,7 @@
     cloneElement.style.left = (ad.location['x']) + 'px';
     cloneElement.style.top = (ad.location['y'] + parseInt(pinHeight, 10)) + 'px';
     cloneElement.querySelector('img').setAttribute('src', ad.author.avatar);
+    // вешаем обработчик клика на пин, который показывает попап
     cloneElement.addEventListener('click', function (evt) {
       var pin = evt.target.closest('.map__pin');
       window.map.showPopup(pin, ad);
@@ -123,8 +127,10 @@
    */
   function renderPins(ads) {
     var fragment = document.createDocumentFragment();
-    var shortAds = ads.slice(0, 5);
-    shortAds.forEach(function (item) {
+    if (ads.length > MAX_PINS) {
+      ads = ads.slice(0, MAX_PINS);
+    }
+    ads.forEach(function (item) {
       var pin = createPin(item);
       fragment.appendChild(pin);
       pins.push(pin);
@@ -142,7 +148,5 @@
     renderPins(dataAds);
   }
 
-  window.pin = {
-    renderMap: renderMap
-  };
+  window.renderMap = renderMap;
 })();

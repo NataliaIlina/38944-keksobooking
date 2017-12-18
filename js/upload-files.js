@@ -2,31 +2,31 @@
 
 (function () {
   function makeDroppable(element, input, callback) {
+
     input.addEventListener('change', function (evt) {
       triggerCallback(evt, callback);
     });
 
     document.addEventListener('dragover', function (evt) {
+      evt.stopPropagation();
       evt.preventDefault();
-      element.style.borderColor = 'red';
     });
 
     element.addEventListener('dragenter', function (evt) {
+      evt.stopPropagation();
       evt.preventDefault();
+      element.style.borderColor = 'red';
       element.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
     });
 
     element.addEventListener('dragleave', function (evt) {
-      evt.preventDefault();
-      element.style = '';
-    });
-
-    document.addEventListener('drop', function (evt) {
+      evt.stopPropagation();
       evt.preventDefault();
       element.style = '';
     });
 
     element.addEventListener('drop', function (evt) {
+      evt.stopPropagation();
       evt.preventDefault();
       element.style = '';
       triggerCallback(evt, callback);
@@ -44,7 +44,7 @@
     } else if (evt.target) {
       files = evt.target.files;
     }
-    callback.call(null, files);
+    callback(files);
   }
 
   window.makeDroppable = makeDroppable;

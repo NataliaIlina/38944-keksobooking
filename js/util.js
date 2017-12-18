@@ -2,18 +2,19 @@
 
 (function () {
   var INTERVAL = 500;
+  var ERROR_COLOR = '#ff5635';
   var currentTimeout;
 
   /**
    * debounce - устанавливает setTimeout для заданной функции, устраняя слишком частые ее вызовы
    *
-   * @param {function} func
+   * @param {function} action
    */
-  function debounce(func) {
+  function debounce(action) {
     if (currentTimeout) {
       window.clearTimeout(currentTimeout);
     }
-    currentTimeout = window.setTimeout(func, INTERVAL);
+    currentTimeout = window.setTimeout(action, INTERVAL);
   }
 
   /**
@@ -55,7 +56,7 @@
    * @param {string} message
    */
   function renderErrorPopup(message) {
-    createPopup(message, '#ff5635');
+    createPopup(message, ERROR_COLOR);
   }
 
   window.util = {
