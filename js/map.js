@@ -12,21 +12,20 @@
       max: 500
     }
   };
+  var PIN_ACTIVE_CLASS = 'map__pin--active';
   var map = document.querySelector('.map');
   var pinsWrapper = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
   var form = document.querySelector('.notice__form');
   var formFieldsets = form.querySelectorAll('fieldset');
   var popup = document.querySelector('.popup');
-  var popupClose = popup.querySelector('.popup__close');
-  var currentPin = null;
   // переменные для drag'n'drop
-  var mainPinHandle = map.querySelector('.map__pin--main img');
-  var formAddress = form.querySelector('#address');
   var pinHeight = mainPin.offsetHeight;
+  var valueX;
+  var valueY;
 
-  // скрываем попап по умолчанию
-  popup.classList.add('hidden');
+  var activePin;
+
   // дизейблим филдсеты
   changeFormAccessibility();
   // события на главном указателе (показываем карту)
@@ -34,8 +33,12 @@
   mainPin.addEventListener('keydown', onMainPinEnterPress);
 
   // события на главном указателе (drag'n'drop)
-  mainPinHandle.addEventListener('mousedown', function (evt) {
+  mainPin.addEventListener('mousedown', function (evt) {
     evt.preventDefault();
+    // если открыт попап - закрываем
+    closePopup();
+    // активируем пин
+    activatePin(mainPin);
     // считаем сдвиг мышки относительно краев передвигаемого эл-та
     var mouseOffset = {
       x: evt.clientX - mainPin.offsetLeft,
@@ -46,6 +49,7 @@
     pinsWrapper.addEventListener('mouseup', onMouseUp);
 
     function onMouseMove(moveEvt) {
+      moveEvt.preventDefault();
       // дабы компенсировть слишком высокую планку в 100px, ставим координату Y в район самой верхней точки указателя
       var initialY = moveEvt.clientY - mouseOffset.y - pinHeight / 2;
       moveEvt.preventDefault();
@@ -55,7 +59,9 @@
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
-        formAddress.value = 'x: ' + parseInt(mainPin.style.left, 10) + ', y: ' + (parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
+        valueX = parseInt(mainPin.style.left, 10);
+        valueY = Math.round(parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
+        window.setAddress(valueX, valueY);
       }
     }
 
@@ -67,6 +73,7 @@
   });
 
   // -----------------функции----------------------------
+
   /**
    * onMainPinClick - обработчик кликов на главном указателе
    *
@@ -94,8 +101,8 @@
     // удаляем обработчики с главного пина во избежании повторных срабатываний
     mainPin.removeEventListener('mousedown', onMainPinClick);
     mainPin.removeEventListener('keydown', onMainPinEnterPress);
-    // показываем пины и отслеживаем клики по карте
-    window.backend.load(renderMap, window.util.renderErrorPopup);
+    // показываем карту с пинами
+    window.backend.load(window.renderMap, window.util.renderErrorPopup);
     // активируем карту и разблокируем форму
     map.classList.remove('map--faded');
     form.classList.remove('notice__form--disabled');
@@ -103,44 +110,28 @@
   }
 
   /**
-   * renderMap - при успешной загрузке данных с сервера заполняет данными пины и попапы на карте
+   * showPopup - показывает попан и назначает стили текущему пину
    *
-   * @param {ad[]} ads
+   * @param {Node} pin пин, на котором произошел клик
+   * @param {ad} ad
    */
-  function renderMap(ads) {
-    window.pin.render(ads);
-    map.addEventListener('click', function (evt) {
-      var pin = evt.target.closest('.map__pin');
-      if (pin) {
-        if (currentPin) {
-          currentPin.classList.remove('map__pin--active');
-        }
-        currentPin = pin;
-        currentPin.classList.add('map__pin--active');
-        if (currentPin !== mainPin) {
-          // по атрибуту id в картинке находим нужный нам объект объявления и заполняем попап
-          var index = currentPin.getAttribute('id');
-          window.showCard(ads[index], popup);
-        }
-      }
-      // показываем попап, задаем обработчики на события попапа
-      popup.classList.remove('hidden');
-      // кликаем на главный пин или крестик -закрываем поппап
-      if (currentPin === mainPin || event.target === popupClose) {
-        closePopup();
-      }
-      // закрываем попап по esc
-      document.addEventListener('keydown', onPopupEscPress);
-    });
+  function showPopup(pin, ad) {
+    activatePin(pin);
+    window.showCard(ad, popup, closePopup);
   }
 
   /**
-   * changeFormAccessibility - переключает блокировку всех полей формы на обратную
+   * activatePin - удаляет класс активности у текущего пина и добавляет его заданному пину(если указан)
    *
+   * @param {Node} [pin]
    */
-  function changeFormAccessibility() {
-    for (var i = 0; i < formFieldsets.length; i++) {
-      formFieldsets[i].disabled = formFieldsets[i].disabled ? false : true;
+  function activatePin(pin) {
+    if (activePin) {
+      activePin.classList.remove(PIN_ACTIVE_CLASS);
+    }
+    if (pin) {
+      pin.classList.add(PIN_ACTIVE_CLASS);
+      activePin = pin;
     }
   }
 
@@ -149,19 +140,22 @@
    *
    */
   function closePopup() {
-    if (currentPin !== mainPin) {
-      currentPin.classList.remove('map__pin--active');
-    }
+    // удаляем класс активности у активного пина и скрываем попап
+    activatePin();
     popup.classList.add('hidden');
-    document.removeEventListener('keydown', onPopupEscPress);
   }
 
   /**
-   * onPopupEscPress - обработчик события нажатия клавиши при открытом попапе
-   *
-   * @param  {Event} evt
-   */
-  function onPopupEscPress(evt) {
-    window.handlers.isEscPressed(evt, closePopup);
+ * changeFormAccessibility - переключает блокировку всех полей формы на обратную
+ *
+ */
+  function changeFormAccessibility() {
+    Array.from(formFieldsets).forEach(function (fieldset) {
+      fieldset.disabled = fieldset.disabled ? false : true;
+    });
   }
+
+  window.map = {
+    showPopup: showPopup
+  };
 })();

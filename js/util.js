@@ -1,6 +1,22 @@
 'use strict';
 
 (function () {
+  var INTERVAL = 500;
+  var ERROR_COLOR = '#ff5635';
+  var currentTimeout;
+
+  /**
+   * debounce - устанавливает setTimeout для заданной функции, устраняя слишком частые ее вызовы
+   *
+   * @param {function} action
+   */
+  function debounce(action) {
+    if (currentTimeout) {
+      window.clearTimeout(currentTimeout);
+    }
+    currentTimeout = window.setTimeout(action, INTERVAL);
+  }
+
   /**
    * createPopup - создает попап, задает стили и заполняет данными
    *
@@ -40,10 +56,11 @@
    * @param {string} message
    */
   function renderErrorPopup(message) {
-    createPopup(message, '#ff5635');
+    createPopup(message, ERROR_COLOR);
   }
 
   window.util = {
+    debounce: debounce,
     renderErrorPopup: renderErrorPopup,
     createPopup: createPopup
   };

@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var DEFAULT_SRC = 'img/muffin.png';
   var TIMES = [
     '12:00',
     '13:00',
@@ -15,6 +16,7 @@
   var MIN_PRICES = [0, 1000, 5000, 10000];
   var ROOMS = ['1', '2', '3', '100'];
   var GUESTS = ['1', '2', '3', '0'];
+  var SUCCESS_COLOR = '#1cb34d';
 
   var form = document.querySelector('.notice__form');
   var formInputs = form.querySelectorAll('input');
@@ -24,6 +26,7 @@
   var price = form.querySelector('#price');
   var roomsNumber = form.querySelector('#room_number');
   var guestsNumber = form.querySelector('#capacity');
+  var formAddress = form.querySelector('#address');
   var title = form.querySelector('#title');
   var minLength = parseInt(title.getAttribute('minlength'), 10);
   var inputError = {
@@ -34,6 +37,19 @@
     highPrice: 'Указанная цена не может быть больше ' + price.max,
     style: '2px solid red'
   };
+  // переменные для drag'n'drop upload
+  var avatarInput = form.querySelector('#avatar');
+  var photoInput = form.querySelector('#images');
+  var dropZoneAvatar = form.querySelector('.drop-zone');
+  var dropZonePhoto = form.querySelector('.drop-zone:nth-child(2)');
+  var avatarPreview = form.querySelector('.notice__preview img');
+  var container = form.querySelector('.form__photo-container');
+  var formImages = [];
+  // задаем контейнеру стили для отображения загруженных фото
+  container.style.width = 'auto';
+  container.style.display = 'flex';
+  container.style.flexWrap = 'wrap';
+  container.querySelector('.upload').style.width = '140px';
 
   // при обновлении страницы синхронизируются поля комнаты/гости и тип/минимальная цена
   window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
@@ -79,6 +95,21 @@
     });
   }
 
+  window.makeDroppable(dropZoneAvatar, avatarInput, function (files) {
+    avatarPreview.setAttribute('src', URL.createObjectURL(files[0]));
+  });
+
+  window.makeDroppable(dropZonePhoto, photoInput, function (files) {
+    for (var i = 0; i < files.length; i++) {
+      var image = document.createElement('img');
+      image.style.height = '60px';
+      image.style.margin = '5px';
+      image.setAttribute('src', URL.createObjectURL(files[i]));
+      container.appendChild(image);
+      formImages.push(image);
+    }
+  });
+
 
   // ---------------- функции ----------------
   /**
@@ -112,21 +143,22 @@
     // получаем текущее значение кол-ва гостей
     var currentValue = guestsElement.value;
 
-    for (var i = 0; i < guestsElement.options.length; i++) {
+    Array.from(guestsElement.options).forEach(function (option) {
       // дизейблим все
-      guestsElement.options[i].disabled = true;
+      option.disabled = true;
       // если текущее значение 0, оставляем доступным только его
       if (currentValue === '0') {
-        if (guestsElement.options[i].value === currentValue) {
-          guestsElement.options[i].disabled = false;
+        if (option.value === currentValue) {
+          option.disabled = false;
         }
       } else {
         // в противном случае делаем доступными все значения меньше текущего и не равные 0
-        if (guestsElement.options[i].value <= currentValue && guestsElement.options[i].value !== '0') {
-          guestsElement.options[i].disabled = false;
+        if (option.value <= currentValue && option.value !== '0') {
+          option.disabled = false;
         }
       }
-    }
+    });
+
   }
 
   /**
@@ -198,7 +230,28 @@
    *
    */
   function renderSuccessPopup() {
-    window.util.createPopup('Данные успешно отправлены', '#1cb34d');
+    window.util.createPopup('Данные успешно отправлены', SUCCESS_COLOR);
     form.reset();
+    // после сброса формы выполняем синхронизацию и заполняем поле адреса
+    window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
+    window.synchronizeFields(type, price, TYPES, MIN_PRICES, syncPriceWithType);
+    // картинки возвращаем в исходное состояние
+    avatarPreview.setAttribute('src', DEFAULT_SRC);
+    formImages.forEach(function (item) {
+      item.remove();
+    });
   }
+
+
+  /**
+   * setAddress - заносит значения координат главного пина в поле адреса
+   *
+   * @param {number} coordX
+   * @param {number} coordY
+   */
+  function setAddress(coordX, coordY) {
+    formAddress.setAttribute('value', 'x: ' + coordX + ', y: ' + coordY);
+  }
+
+  window.setAddress = setAddress;
 })();
