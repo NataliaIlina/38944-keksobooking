@@ -151,7 +151,7 @@
  */
   function changeFormAccessibility() {
     Array.from(formFieldsets).forEach(function (fieldset) {
-      fieldset.disabled = fieldset.disabled ? false : true;
+      fieldset.disabled = !fieldset.disabled;
     });
   }
 

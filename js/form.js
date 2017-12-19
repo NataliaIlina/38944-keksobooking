@@ -82,9 +82,6 @@
     // проверяем форму при отправке
     form.addEventListener('submit', function (evt) {
       evt.preventDefault();
-      for (var i = 0; i < formInputs.length; i++) {
-        setErrorStyle(formInputs[i], true);
-      }
       if (!title.validity.valid) {
         setErrorStyle(title);
       } else if (!price.validity.valid) {
@@ -232,6 +229,9 @@
   function renderSuccessPopup() {
     window.util.createPopup('Данные успешно отправлены', SUCCESS_COLOR);
     form.reset();
+    Array.from(formInputs).forEach(function (item) {
+      setErrorStyle(item, true);
+    });
     // после сброса формы выполняем синхронизацию и заполняем поле адреса
     window.synchronizeFields(roomsNumber, guestsNumber, ROOMS, GUESTS, syncGuestsWithRooms);
     window.synchronizeFields(type, price, TYPES, MIN_PRICES, syncPriceWithType);

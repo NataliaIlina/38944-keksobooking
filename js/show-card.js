@@ -15,11 +15,6 @@
   cloneCard.classList.add('hidden');
 
   /**
-   * объект объявления
-   * @typedef {Object} ad
-   */
-
-  /**
    * showCard - заполняет карточку объявления данными из объекта
    *
    * @param  {ad} ad объект с данными
@@ -88,7 +83,7 @@
   }
 
   function sortImages(list) {
-    var dragEl;
+    var draggedItem;
     // разрешаем переност элементов списка
     Array.from(list.children).forEach(function (item) {
       item.draggable = true;
@@ -98,8 +93,8 @@
       evt.preventDefault();
       evt.dataTransfer.dropEffect = 'move';
       var target = evt.target.closest('li');
-      if (target && target !== dragEl) {
-        list.insertBefore(dragEl, target);
+      if (target && target !== draggedItem) {
+        list.insertBefore(draggedItem, target);
       }
     }
 
@@ -111,7 +106,7 @@
 
     list.addEventListener('dragstart', function (evt) {
       // запоминаем элемент который будет перемещать
-      dragEl = evt.target.closest('li');
+      draggedItem = evt.target.closest('li');
       evt.dataTransfer.effectAllowed = 'move';
       list.addEventListener('dragover', onDragOver);
       list.addEventListener('drop', onDrop);

@@ -127,9 +127,7 @@
    */
   function renderPins(ads) {
     var fragment = document.createDocumentFragment();
-    if (ads.length > MAX_PINS) {
-      ads = ads.slice(0, MAX_PINS);
-    }
+    ads = ads.length > MAX_PINS ? ads.slice(0, MAX_PINS) : ads;
     ads.forEach(function (item) {
       var pin = createPin(item);
       fragment.appendChild(pin);
@@ -139,9 +137,14 @@
   }
 
   /**
+   * объект объявления
+   * @typedef {Object} ad
+   */
+
+  /**
    * renderMap - при успешной загрузке данных с сервера заполняет данными пины и попапы на карте
    *
-   * @param {Array} data
+   * @param {ad[]} data
    */
   function renderMap(data) {
     dataAds = data;
