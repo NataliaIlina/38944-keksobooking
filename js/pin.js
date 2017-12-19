@@ -108,16 +108,16 @@
    * @return {Node} скопированный с шаблона элемент с данными
    */
   function createPin(ad) {
-    var cloneElement = pinTemplate.cloneNode(true);
-    cloneElement.style.left = (ad.location['x']) + 'px';
-    cloneElement.style.top = (ad.location['y'] + parseInt(pinHeight, 10)) + 'px';
-    cloneElement.querySelector('img').setAttribute('src', ad.author.avatar);
+    var clonePin = pinTemplate.cloneNode(true);
+    clonePin.style.left = (ad.location['x']) + 'px';
+    clonePin.style.top = (ad.location['y'] + parseInt(pinHeight, 10)) + 'px';
+    clonePin.querySelector('img').setAttribute('src', ad.author.avatar);
     // вешаем обработчик клика на пин, который показывает попап
-    cloneElement.addEventListener('click', function (evt) {
+    clonePin.addEventListener('click', function (evt) {
       var pin = evt.target.closest('.map__pin');
       window.map.showPopup(pin, ad);
     });
-    return cloneElement;
+    return clonePin;
   }
 
   /**

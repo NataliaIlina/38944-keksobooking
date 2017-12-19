@@ -132,15 +132,15 @@
   /**
    * syncGuestsWithRooms - синхронизирует кол-во гостей с кол-вом комнат
    *
-   * @param {Node} guestsElement
+   * @param {Node} guestsSelect
    * @param {string} guestsValue
    */
-  function syncGuestsWithRooms(guestsElement, guestsValue) {
-    guestsElement.value = guestsValue;
+  function syncGuestsWithRooms(guestsSelect, guestsValue) {
+    guestsSelect.value = guestsValue;
     // получаем текущее значение кол-ва гостей
-    var currentValue = guestsElement.value;
+    var currentValue = guestsSelect.value;
 
-    Array.from(guestsElement.options).forEach(function (option) {
+    Array.from(guestsSelect.options).forEach(function (option) {
       // дизейблим все
       option.disabled = true;
       // если текущее значение 0, оставляем доступным только его
