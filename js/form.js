@@ -93,17 +93,35 @@
   }
 
   window.makeDroppable(dropZoneAvatar, avatarInput, function (files) {
-    avatarPreview.setAttribute('src', URL.createObjectURL(files[0]));
+    if (!files[0].type.match(/image.*/)) {
+      window.util.renderErrorPopup('Загружать можно только картинки!');
+      return;
+    }
+    var reader = new FileReader();
+    reader.addEventListener('load', function () {
+      avatarPreview.src = reader.result;
+    });
+    reader.readAsDataURL(files[0]);
   });
 
   window.makeDroppable(dropZonePhoto, photoInput, function (files) {
     for (var i = 0; i < files.length; i++) {
-      var image = document.createElement('img');
-      image.style.height = '60px';
-      image.style.margin = '5px';
-      image.setAttribute('src', URL.createObjectURL(files[i]));
-      container.appendChild(image);
-      formImages.push(image);
+      if (!files[i].type.match(/image.*/)) {
+        window.util.renderErrorPopup('Загружать можно только картинки!');
+        return;
+      }
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function (evt) {
+        var image = document.createElement('img');
+        image.style.height = '60px';
+        image.style.margin = '5px';
+        image.src = evt.target.result;
+        container.appendChild(image);
+        formImages.push(image);
+      });
+
+      reader.readAsDataURL(files[i]);
     }
   });
 
