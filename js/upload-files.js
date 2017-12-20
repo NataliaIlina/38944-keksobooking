@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var ACTIVE_BORDER_COLOR = '#ff5635';
+  var ACTIVE_BACKGROUND_COLOR = 'rgba(255, 86, 53, 0.2)';
+
   function makeDroppable(element, input, callback) {
 
     input.addEventListener('change', function (evt) {
@@ -15,8 +18,8 @@
     element.addEventListener('dragenter', function (evt) {
       evt.stopPropagation();
       evt.preventDefault();
-      element.style.borderColor = 'red';
-      element.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+      element.style.borderColor = ACTIVE_BORDER_COLOR;
+      element.style.backgroundColor = ACTIVE_BACKGROUND_COLOR;
     });
 
     element.addEventListener('dragleave', function (evt) {
@@ -35,7 +38,7 @@
 
 
   function triggerCallback(evt, callback) {
-    if (!callback || typeof callback !== 'function') {
+    if (typeof callback !== 'function') {
       return;
     }
     var files;

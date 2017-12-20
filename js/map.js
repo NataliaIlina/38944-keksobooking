@@ -12,7 +12,7 @@
       max: 500
     }
   };
-  var PIN_ACTIVE_CLASS = 'map__pin--active';
+  var PIN_ACTIVE_CLASSNAME = 'map__pin--active';
   var map = document.querySelector('.map');
   var pinsWrapper = map.querySelector('.map__pins');
   var mainPin = map.querySelector('.map__pin--main');
@@ -127,10 +127,10 @@
    */
   function activatePin(pin) {
     if (activePin) {
-      activePin.classList.remove(PIN_ACTIVE_CLASS);
+      activePin.classList.remove(PIN_ACTIVE_CLASSNAME);
     }
     if (pin) {
-      pin.classList.add(PIN_ACTIVE_CLASS);
+      pin.classList.add(PIN_ACTIVE_CLASSNAME);
       activePin = pin;
     }
   }
@@ -151,7 +151,7 @@
  */
   function changeFormAccessibility() {
     Array.from(formFieldsets).forEach(function (fieldset) {
-      fieldset.disabled = fieldset.disabled ? false : true;
+      fieldset.disabled = !fieldset.disabled;
     });
   }
 
