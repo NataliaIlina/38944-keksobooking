@@ -56,7 +56,6 @@
     closeButton.addEventListener('click', onPopupCloseClick);
     document.addEventListener('keydown', onPopupEscPress);
 
-    sortImages(imagesList);
 
     /**
      * onPopupCloseClick - обработчик события клика мыши на крестике попапа
@@ -75,42 +74,13 @@
      * @param  {Event} evt
      */
     function onPopupEscPress(evt) {
-      window.handlers.isEscPressed(evt, onCLose);
-      // удаляем обработчики попапа
-      closeButton.removeEventListener('click', onPopupCloseClick);
-      document.removeEventListener('keydown', onPopupEscPress);
+      window.handlers.isEscPressed(evt, function () {
+        onCLose();
+        // удаляем обработчики попапа
+        closeButton.removeEventListener('click', onPopupCloseClick);
+        document.removeEventListener('keydown', onPopupEscPress);
+      });
     }
-  }
-
-  function sortImages(list) {
-    var draggedItem;
-    // разрешаем переност элементов списка
-    Array.from(list.children).forEach(function (item) {
-      item.draggable = true;
-    });
-
-    function onDragOver(evt) {
-      evt.preventDefault();
-      evt.dataTransfer.dropEffect = 'move';
-      var target = evt.target.closest('li');
-      if (target && target !== draggedItem) {
-        list.insertBefore(draggedItem, target);
-      }
-    }
-
-    function onDrop(evt) {
-      evt.preventDefault();
-      list.removeEventListener('dragover', onDragOver);
-      list.removeEventListener('dragend', onDrop);
-    }
-
-    list.addEventListener('dragstart', function (evt) {
-      // запоминаем элемент который будет перемещать
-      draggedItem = evt.target.closest('li');
-      evt.dataTransfer.effectAllowed = 'move';
-      list.addEventListener('dragover', onDragOver);
-      list.addEventListener('drop', onDrop);
-    });
   }
 
   window.showCard = showCard;
