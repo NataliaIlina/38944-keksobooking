@@ -2,6 +2,7 @@
 
 (function () {
   var SERVER_URL = 'https://1510.dump.academy/keksobooking';
+  var SERVER_UPLOAD_URL = 'https://1510.dump.academy/keksobooking/data';
   var STATUS_OK = 200;
   var TIMEOUT = 5000;
 
@@ -42,7 +43,7 @@
    */
   function load(onLoad, onError) {
     var xhr = setup(onLoad, onError);
-    xhr.open('GET', SERVER_URL + '/data');
+    xhr.open('GET', SERVER_UPLOAD_URL);
     xhr.send();
   }
 
