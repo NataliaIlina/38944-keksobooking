@@ -32,30 +32,14 @@
     template.querySelector('h4').textContent = TYPE[ad.offer.type];
     template.querySelector('p:nth-of-type(3)').textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
     template.querySelector('p:nth-of-type(4)').textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
-    featuresList.innerHTML = '';
-    ad.offer.features.forEach(function (item) {
-      var li = document.createElement('li');
-      li.classList.add('feature', 'feature--' + item);
-      featuresList.appendChild(li);
-    });
+    renderFeatures(featuresList, ad.offer.features);
     template.querySelector('p:nth-of-type(5)').textContent = ad.offer.description;
     template.querySelector('.popup__avatar').setAttribute('src', ad.author.avatar);
-    imagesList.innerHTML = '';
-    if (ad.offer.photos.length > 0) {
-      ad.offer.photos.forEach(function (photo) {
-        var listItem = document.createElement('li');
-        var image = document.createElement('img');
-        image.setAttribute('src', photo);
-        image.style = 'width: 40px; height: 40px; margin-right: 5px';
-        listItem.appendChild(image);
-        imagesList.appendChild(listItem);
-      });
-    }
+    renderImages(imagesList, ad.offer.photos);
     template.classList.remove('hidden');
 
     closeButton.addEventListener('click', onPopupCloseClick);
     document.addEventListener('keydown', onPopupEscPress);
-
 
     /**
      * onPopupCloseClick - обработчик события клика мыши на крестике попапа
@@ -79,6 +63,41 @@
         // удаляем обработчики попапа
         closeButton.removeEventListener('click', onPopupCloseClick);
         document.removeEventListener('keydown', onPopupEscPress);
+      });
+    }
+  }
+
+  /**
+   * renderFeatures - сбрасывает текущее содержимое списка удобств и заполняет его элементами списка, полученными из массива features
+   *
+   * @param {Node} featuresList список
+   * @param {Array} features массив удобств
+   */
+  function renderFeatures(featuresList, features) {
+    featuresList.innerHTML = '';
+    features.forEach(function (item) {
+      var li = document.createElement('li');
+      li.classList.add('feature', 'feature--' + item);
+      featuresList.appendChild(li);
+    });
+  }
+
+  /**
+   * renderImages - сбрасывает текущее содержимое списка фотографий и заполняет его элементами списка, заполненными изображениями из массива photos
+   *
+   * @param {Node} imagesList список
+   * @param {Array} photos массив фотографий
+   */
+  function renderImages(imagesList, photos) {
+    imagesList.innerHTML = '';
+    if (photos.length > 0) {
+      photos.forEach(function (photo) {
+        var listItem = document.createElement('li');
+        var image = document.createElement('img');
+        image.setAttribute('src', photo);
+        image.style = 'width: 40px; height: 40px; margin-right: 5px';
+        listItem.appendChild(image);
+        imagesList.appendChild(listItem);
       });
     }
   }

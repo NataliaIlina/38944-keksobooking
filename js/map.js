@@ -44,6 +44,11 @@
       x: evt.clientX - mainPin.offsetLeft,
       y: evt.clientY - mainPin.offsetTop
     };
+    var defaultCoords = {
+      x: evt.clientX - mouseOffset.x,
+      y: Math.round(evt.clientY - mouseOffset.y + pinHeight / 2 + ARROW_HEIGHT)
+    };
+    window.setAddress(defaultCoords.x, defaultCoords.y);
     // задаем обработчики
     pinsWrapper.addEventListener('mousemove', onMouseMove);
     pinsWrapper.addEventListener('mouseup', onMouseUp);
