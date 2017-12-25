@@ -21,8 +21,6 @@
   var popup = document.querySelector('.popup');
   // переменные для drag'n'drop
   var pinHeight = mainPin.offsetHeight;
-  var valueX;
-  var valueY;
 
   var activePin;
 
@@ -44,11 +42,12 @@
       x: evt.clientX - mainPin.offsetLeft,
       y: evt.clientY - mainPin.offsetTop
     };
-    var defaultCoords = {
+    // создаем объект под координаты и передаем их в поле адреса
+    var coordinate = {
       x: evt.clientX - mouseOffset.x,
       y: Math.round(evt.clientY - mouseOffset.y + pinHeight / 2 + ARROW_HEIGHT)
     };
-    window.setAddress(defaultCoords.x, defaultCoords.y);
+    window.setAddress(coordinate.x, coordinate.y);
     // задаем обработчики
     pinsWrapper.addEventListener('mousemove', onMouseMove);
     pinsWrapper.addEventListener('mouseup', onMouseUp);
@@ -64,9 +63,9 @@
         mainPin.style.left = (moveEvt.clientX - mouseOffset.x) + 'px';
         mainPin.style.top = (moveEvt.clientY - mouseOffset.y) + 'px';
         // сразу передаем значения в поле адреса
-        valueX = parseInt(mainPin.style.left, 10);
-        valueY = Math.round(parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
-        window.setAddress(valueX, valueY);
+        coordinate.x = parseInt(mainPin.style.left, 10);
+        coordinate.y = Math.round(parseInt(mainPin.style.top, 10) + pinHeight / 2 + ARROW_HEIGHT);
+        window.setAddress(coordinate.x, coordinate.y);
       }
     }
 
