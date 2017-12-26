@@ -4,6 +4,7 @@
   var LOW_PRICE = 10000;
   var HIGH_PRICE = 50000;
   var MAX_PINS = 5;
+
   var pinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var pinTemplateImage = pinTemplate.querySelector('img');
   var pinHeight = pinTemplateImage.getAttribute('height');
@@ -58,19 +59,12 @@
     });
 
     currentAds = currentAds.filter(function (ad) {
-      var result;
-      switch (price) {
-        case 'low':
-          result = ad.offer.price < LOW_PRICE;
-          break;
-        case 'middle':
-          result = (ad.offer.price >= LOW_PRICE && ad.offer.price <= HIGH_PRICE);
-          break;
-        case 'high':
-          result = ad.offer.price > HIGH_PRICE;
-          break;
-      }
-      return isAny(price) ? ad.offer.price : result;
+      var result = {
+        'low': ad.offer.price < LOW_PRICE,
+        'middle': (ad.offer.price >= LOW_PRICE && ad.offer.price <= HIGH_PRICE),
+        'high': ad.offer.price > HIGH_PRICE
+      };
+      return isAny(price) ? ad.offer.price : result[price];
     });
 
     if (features.length > 0) {
