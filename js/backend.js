@@ -1,8 +1,8 @@
 'use strict';
 
 (function () {
-  var SERVER_URL = 'https://1510.dump.academy/keksobooking';
-  var SERVER_UPLOAD_URL = 'https://1510.dump.academy/keksobooking/data';
+  var SERVER_URL = 'https://js.dump.academy/keksobooking';
+  var SERVER_UPLOAD_URL = 'https://js.dump.academy/keksobooking/data';
   var STATUS_OK = 200;
   var TIMEOUT = 5000;
 
